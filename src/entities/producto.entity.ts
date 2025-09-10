@@ -37,7 +37,7 @@ export class Producto {
   @Column('decimal', { precision: 10, scale: 2 })
   ganancia!: number;
 
-  @Column()
+  @Column({ default: 0 })
   stock!: number;
 
   @ManyToOne(() => Proveedor, proveedor => proveedor.productos)

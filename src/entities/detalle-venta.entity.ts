@@ -7,12 +7,12 @@ export class DetalleVenta {
   @PrimaryGeneratedColumn()
   idDetalle!: number;
 
-  @Column()
+  @Column({default: 0 })
   cantidad!: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
   subtotal!: number;
-
+  
   @ManyToOne(() => Producto, producto => producto.detalles)
   producto?: Producto;
 
@@ -24,6 +24,7 @@ export class DetalleVenta {
   }
 
   calcularSubtotal(): number {
-    return this.cantidad * (this.producto?.calcularPrecioFinal() ?? 0);
+    this.subtotal = this.cantidad * (this.producto?.calcularPrecioFinal() ?? 0);
+    return this.subtotal;
   }
 }

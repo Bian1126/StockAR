@@ -24,4 +24,5 @@ export class CreateVentaDto {
   @ValidateNested({ each: true })
   @Type(() => CreateVentaDetalleDto)
   detalle!: CreateVentaDetalleDto[];
+  static detalle: any;
 }
