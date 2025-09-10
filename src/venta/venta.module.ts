@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { VentaService } from './venta.service';
 import { VentaController } from './venta.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Venta } from './venta.entity';
+import { Venta } from 'entities/venta.entity';
 import { DetalleVentaModule } from '../detalle-venta/detalle-venta.module';
 
 @Module({

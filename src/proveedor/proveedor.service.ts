@@ -21,11 +21,11 @@ export class ProveedorService {
     return this.proveedorRepository.find();
   }
 
-  async findOne(id: number): Promise<Proveedor | undefined> {
+  async findOne(id: number): Promise<Proveedor | null> {
     return this.proveedorRepository.findOne({ where: { idProveedor: id } });
   }
 
-  async update(id: number, updateProveedorDto: UpdateProveedorDto): Promise<Proveedor | undefined> {
+  async update(id: number, updateProveedorDto: UpdateProveedorDto): Promise<Proveedor | null> {
     await this.proveedorRepository.update(id, updateProveedorDto);
     return this.findOne(id);
   }

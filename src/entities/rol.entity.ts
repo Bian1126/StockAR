@@ -15,6 +15,10 @@ export class Rol {
   @OneToMany(() => Usuario, usuario => usuario.rol)
   usuarios!: Usuario[];
 
+  constructor(init?: Partial<Rol>) {
+    Object.assign(this, init);
+  }
+
   // Ver si van o no
   setNombre(nombre: string) {
     this.nombre = nombre;

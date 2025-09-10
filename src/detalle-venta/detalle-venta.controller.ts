@@ -9,7 +9,7 @@ export class DetalleVentaController {
   constructor(private readonly detalleVentaService: DetalleVentaService) {}
 
   @Post()
-  async create(@Body() createDetalleVentaDto: CreateDetalleVentaDtota): Promise<DetalleVenta> {
+  async create(@Body() createDetalleVentaDto: CreateDetalleVentaDto): Promise<DetalleVenta> {
     return await this.detalleVentaService.create(createDetalleVentaDto);
   }
 

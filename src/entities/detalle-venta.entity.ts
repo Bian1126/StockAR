@@ -17,9 +17,13 @@ export class DetalleVenta {
   producto?: Producto;
 
   @ManyToOne(() => Venta, venta => venta.detalle)
-  venta!: Venta;
+  venta?: Venta;
+
+  constructor(init?: Partial<DetalleVenta>) {
+    Object.assign(this, init);
+  }
 
   calcularSubtotal(): number {
-    return this.cantidad * (this.producto ? this.producto.calcularPrecioFinal() : 0);
+    return this.cantidad * (this.producto?.calcularPrecioFinal() ?? 0);
   }
 }

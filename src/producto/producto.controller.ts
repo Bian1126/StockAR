@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, NotFoundException } from '@nestjs/common';
 import { ProductoService } from './producto.service';
 import { Producto } from '../entities/producto.entity';
 import { CreateProductoDto } from '../common/dto/create-producto.dto';
 import { UpdateProductoDto } from '../common/dto/update-producto.dto';
+import { Not } from 'typeorm';
 
 @Controller('productos')
 export class ProductoController {
@@ -32,7 +33,11 @@ export class ProductoController {
     @Param('id') id: string,
     @Body() updateProductoDto: UpdateProductoDto
   ): Promise<Producto> {
-    return this.productoService.update(Number(id), updateProductoDto);
+    const producto = await this.productoService.update(Number(id), updateProductoDto);
+    if (!producto) {
+      throw new NotFoundException('Producto no encontrado');
+    }
+    return producto;
   }
 
   @Patch(':id/stock/:cantidad')
@@ -40,7 +45,11 @@ export class ProductoController {
     @Param('id') id: string,
     @Param('cantidad') cantidad: string
   ): Promise<Producto> {
-    return this.productoService.updateStock(Number(id), Number(cantidad));
+    const producto = await this.productoService.updateStock(Number(id), Number(cantidad));
+    if (!producto) {
+      throw new NotFoundException('Producto no encontrado');
+    }
+    return producto;
   }
 
   @Get(':id/precio-final')

@@ -15,6 +15,10 @@ export class Moneda {
   @OneToMany(() => Producto, producto => producto.moneda)
   productos!: Producto[];
 
+  constructor(init?: Partial<Moneda>) {
+    Object.assign(this, init);
+  }
+
   actualizarCotizacion(nuevaCotizacion: number) {
     this.cotizacion = nuevaCotizacion;
   }

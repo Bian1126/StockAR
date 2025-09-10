@@ -24,11 +24,14 @@ export class Venta {
   
   constructor(init?: Partial<Venta>) {
     Object.assign(this, init);
+      if (!this.detalle) {
+        this.detalle = [];
+      }
   }
 
   calcularTotal(): number {
     // Lógica para calcular el total de la venta sumando los subtotales de los detalles
-    return this.detalle?.reduce((sum, d) => sum + d.subtotal, 0) || 0;
+    return this.detalle.reduce((sum, d) => sum + d.subtotal, 0);
   }
 
   generarPDF(): void {

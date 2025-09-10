@@ -25,7 +25,10 @@ export class RolService {
   async update(id: number, updateRolDto: UpdateRolDto): Promise<Rol | null> {
     const index = this.roles.findIndex(role => role.id === id);
     if (index !== -1) {
-      this.roles[index] = { ...this.roles[index], ...updateRolDto };
+      this.roles[index] = new Rol({
+        ...this.roles[index],
+        ...updateRolDto
+      });
       return this.roles[index];
     }
     return null;

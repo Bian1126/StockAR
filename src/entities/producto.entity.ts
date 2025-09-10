@@ -49,9 +49,12 @@ export class Producto {
   @OneToMany(() => DetalleVenta, detalleVenta => detalleVenta.producto)
   detalles!: DetalleVenta[];
 
+  constructor(init?: Partial<Producto>) {
+    Object.assign(this, init);
+  }
+
   calcularPrecioFinal(): number {
     //CAlculo de precioNeto + IVA + Ganancia
-
     return (
       this.precioNeto + 
       (this.precioNeto * this.iva) / 100 + 
