@@ -24,4 +24,9 @@ export class DetalleVentaController {
   async findAll(): Promise<DetalleVenta[]> {
     return await this.detalleVentaService.findAll();
   }
+
+  @Get('vista/all')
+  async findAllForView(): Promise<any[]> {
+    return await this.detalleVentaService.findAllForView();
+  }
 }

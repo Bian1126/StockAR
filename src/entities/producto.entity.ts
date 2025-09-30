@@ -1,6 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Moneda } from '../entities/moneda.entity';
-import { Proveedor } from './proveedor.entity';
 import { Usuario } from './usuario.entity';
 import { DetalleVenta } from './detalle-venta.entity';
 
@@ -17,16 +16,19 @@ export class Producto {
   nombre!: string;
 
   @Column()
+  tipoProducto!: string;
+
+  @Column()
   descripcion!: string;
 
   @Column()
   marca!: string;
 
-  @Column()
-  rubro!: string;
-
   @Column('decimal', { precision: 10, scale: 2 })
   precioNeto!: number;
+
+  @Column('decimal', { precision: 10, scale: 2 })
+  precioVenta!: number;
 
   @ManyToOne(() => Moneda, moneda => moneda.productos)
   moneda!: Moneda;
@@ -40,8 +42,8 @@ export class Producto {
   @Column({ default: 0 })
   stock!: number;
 
-  @ManyToOne(() => Proveedor, proveedor => proveedor.productos)
-  proveedor!: Proveedor;
+  @Column()
+  proveedor!: string;
 
   @ManyToOne(() => Usuario, usuario => usuario.productos, { nullable: true })
   usuario!: Usuario;
@@ -63,7 +65,7 @@ export class Producto {
   }
 
   actualizarStock(cantidad: number): void {
-    this.stock -= cantidad;
+    this.stock += cantidad;
   }
 
 } 

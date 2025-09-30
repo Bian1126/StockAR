@@ -14,7 +14,7 @@ export class DetalleVenta {
   subtotal!: number;
   
   @ManyToOne(() => Producto, producto => producto.detalles)
-  producto?: Producto;
+  producto!: Producto;
 
   @ManyToOne(() => Venta, venta => venta.detalle)
   venta?: Venta;

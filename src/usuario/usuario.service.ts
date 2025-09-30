@@ -9,12 +9,14 @@ export class UsuarioService {
   private nextId = 1;
   
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
+    if (createUsuarioDto.contraseña !== createUsuarioDto.verificarContraseña) {
+      throw new Error('Las contraseñas no coinciden');
+    }
     const usuario = new Usuario();
     usuario.idUsuario = this.nextId++;
-    usuario.nombre = createUsuarioDto.nombre;
     usuario.email = createUsuarioDto.email;
     usuario.contraseña = createUsuarioDto.contraseña;
-    usuario.rol = undefined as any; // Asigna el rol real si lo tienes
+    // usuario.rol = undefined as any; // Asigna el rol real si lo tienes
     usuario.productos = [];
     usuario.ventas = [];
     this.usuarios.push(usuario);

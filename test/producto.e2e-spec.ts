@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductoController } from '../src/producto/producto.controller';
 import { ProductoService } from '../src/producto/producto.service';
-import { Producto } from '../src/producto/producto.entity';
+import { Producto } from '../src/entities/producto.entity';
 
 describe('ProductoController (e2e)', () => {
   let app;

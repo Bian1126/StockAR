@@ -11,15 +11,15 @@ export class CreateProductoDto {
 
   @IsString()
   @IsNotEmpty()
+  tipoProducto!: string;
+
+  @IsString()
+  @IsNotEmpty()
   descripcion!: string;
 
   @IsString()
   @IsNotEmpty()
   marca!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  rubro!: string;
 
   @IsNumber()
   @IsPositive()
@@ -38,11 +38,12 @@ export class CreateProductoDto {
   ganancia!: number;
 
   @IsInt()
+  @IsPositive()
   stock!: number;
 
-  @IsInt()
+  @IsString()
   @IsPositive()
-  proveedorId!: number;
+  proveedor!: string; 
 
   @IsInt()
   usuarioId?: number; // Puede ser opcional si el usuario es nullable

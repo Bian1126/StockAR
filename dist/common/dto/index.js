@@ -24,7 +24,5 @@ __exportStar(require("./create-detalle-venta.dto"), exports);
 __exportStar(require("./update-detalle-venta.dto"), exports);
 __exportStar(require("./create-rol.dto"), exports);
 __exportStar(require("./update-rol.dto"), exports);
-__exportStar(require("./create-proveedor.dto"), exports);
-__exportStar(require("./update-proveedor.dto"), exports);
 __exportStar(require("./create-moneda.dto"), exports);
 __exportStar(require("./update-moneda.dto"), exports);

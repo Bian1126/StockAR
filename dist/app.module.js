@@ -14,7 +14,6 @@ const producto_module_1 = require("./producto/producto.module");
 const venta_module_1 = require("./venta/venta.module");
 const detalle_venta_module_1 = require("./detalle-venta/detalle-venta.module");
 const rol_module_1 = require("./rol/rol.module");
-const proveedor_module_1 = require("./proveedor/proveedor.module");
 const moneda_module_1 = require("./moneda/moneda.module");
 const entities_1 = require("./entities");
 let AppModule = class AppModule {
@@ -37,7 +36,6 @@ AppModule = __decorate([
             venta_module_1.VentaModule,
             detalle_venta_module_1.DetalleVentaModule,
             rol_module_1.RolModule,
-            proveedor_module_1.ProveedorModule,
             moneda_module_1.MonedaModule,
         ],
         controllers: [],

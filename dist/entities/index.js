@@ -11,8 +11,6 @@ const detalle_venta_entity_1 = require("./detalle-venta.entity");
 Object.defineProperty(exports, "DetalleVenta", { enumerable: true, get: function () { return detalle_venta_entity_1.DetalleVenta; } });
 const rol_entity_1 = require("./rol.entity");
 Object.defineProperty(exports, "Rol", { enumerable: true, get: function () { return rol_entity_1.Rol; } });
-const proveedor_entity_1 = require("./proveedor.entity");
-Object.defineProperty(exports, "Proveedor", { enumerable: true, get: function () { return proveedor_entity_1.Proveedor; } });
 const moneda_entity_1 = require("./moneda.entity");
 Object.defineProperty(exports, "Moneda", { enumerable: true, get: function () { return moneda_entity_1.Moneda; } });
 exports.entities = [
@@ -21,6 +19,5 @@ exports.entities = [
     venta_entity_1.Venta,
     detalle_venta_entity_1.DetalleVenta,
     rol_entity_1.Rol,
-    proveedor_entity_1.Proveedor,
     moneda_entity_1.Moneda,
 ];
