@@ -3,15 +3,11 @@ import { IsString, IsNotEmpty, IsNumber, IsPositive, IsInt } from 'class-validat
 export class CreateProductoDto {
   @IsString()
   @IsNotEmpty()
-  codigo!: string;
+  codigo!: number;
 
   @IsString()
   @IsNotEmpty()
   nombre!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  tipoProducto!: string;
 
   @IsString()
   @IsNotEmpty()
@@ -25,9 +21,9 @@ export class CreateProductoDto {
   @IsPositive()
   precioNeto!: number;
 
-  @IsInt()
+  @IsNumber()
   @IsPositive()
-  monedaId!: number;
+  precioVenta!: number;
 
   @IsNumber()
   @IsPositive()
@@ -41,10 +37,11 @@ export class CreateProductoDto {
   @IsPositive()
   stock!: number;
 
-  @IsString()
+  @IsInt()
   @IsPositive()
-  proveedor!: string; 
+  idTipoProducto!: number; // Relación con TipoProducto
 
   @IsInt()
-  usuarioId?: number; // Puede ser opcional si el usuario es nullable
+  @IsPositive()
+  idMoneda!: number; // Relación con Moneda
 }
