@@ -36,12 +36,5 @@ El proyecto incluye pruebas unitarias y de integración. Para ejecutar las prueb
 
 ```
 npm run test
-```
-
-## Contribuciones
-
-Las contribuciones son bienvenidas. Si deseas contribuir, por favor abre un issue o un pull request en el repositorio.
-
-## Licencia
-
-Este proyecto está bajo la Licencia MIT.
+    o
+npx jest src/usuario/usuario.service.spec.ts (para testear exclusivamente una prueba unitaria especifica) 
