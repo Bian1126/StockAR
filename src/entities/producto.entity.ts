@@ -1,22 +1,17 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
-import { Moneda } from '../entities/moneda.entity';
-import { Usuario } from './usuario.entity';
-import { DetalleVenta } from './detalle-venta.entity';
-
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Moneda } from './moneda.entity';
+import { TipoProducto } from './tipo-producto.entity';
 
 @Entity()
 export class Producto {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id_Producto' })
   idProducto!: number;
 
   @Column()
-  codigo!: string;
+  codigo!: number;
 
   @Column()
   nombre!: string;
-
-  @Column()
-  tipoProducto!: string;
 
   @Column()
   descripcion!: string;
@@ -30,9 +25,6 @@ export class Producto {
   @Column('decimal', { precision: 10, scale: 2 })
   precioVenta!: number;
 
-  @ManyToOne(() => Moneda, moneda => moneda.productos)
-  moneda!: Moneda;
-
   @Column('decimal', { precision: 5, scale: 2 })
   iva!: number;
 
@@ -42,30 +34,16 @@ export class Producto {
   @Column({ default: 0 })
   stock!: number;
 
-  @Column()
-  proveedor!: string;
+  @ManyToOne(() => TipoProducto, { nullable: false })
+  @JoinColumn({ name: 'id_TipoProducto' })
+  tipoProducto!: TipoProducto;
 
-  @ManyToOne(() => Usuario, usuario => usuario.productos, { nullable: true })
-  usuario!: Usuario;
-
-  @OneToMany(() => DetalleVenta, detalleVenta => detalleVenta.producto)
-  detalles!: DetalleVenta[];
+  @ManyToOne(() => Moneda, { nullable: false })
+  @JoinColumn({ name: 'id_Moneda' })
+  moneda!: Moneda;
 
   constructor(init?: Partial<Producto>) {
     Object.assign(this, init);
   }
 
-  calcularPrecioFinal(): number {
-    //CAlculo de precioNeto + IVA + Ganancia
-    return (
-      this.precioNeto + 
-      (this.precioNeto * this.iva) / 100 + 
-      (this.precioNeto * this.ganancia) / 100
-    );
-  }
-
-  actualizarStock(cantidad: number): void {
-    this.stock += cantidad;
-  }
-
-} 
+}

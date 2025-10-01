@@ -1,25 +1,32 @@
-import { Usuario } from './usuario.entity';
-import { Producto } from './producto.entity';
-import { Venta } from './venta.entity';
 import { DetalleVenta } from './detalle-venta.entity';
-import { Rol } from './rol.entity';
-import { Proveedor } from './proveedor.entity';
+import { Empleado } from './empleado.entity';
 import { Moneda } from './moneda.entity';
+import { Producto } from './producto.entity';
+import { Rol } from './rol.entity';
+import { TipoMoneda } from './tipo-moneda.entity';
+import { TipoProducto } from './tipo-producto.entity';
+import { Usuario } from './usuario.entity';
+import { Venta } from './venta.entity';
+
 
 export const entities = [
-  Usuario,
-  Producto,
-  Venta,
   DetalleVenta,
-  Rol,
-  Proveedor,
+  Empleado,
   Moneda,
+  Producto,
+  Rol,
+  TipoMoneda,
+  TipoProducto,
+  Usuario,
+  Venta,
 ];
 
-export { Usuario };
-export { Producto };
-export { Venta };
 export { DetalleVenta };
-export { Rol };
-export { Proveedor };
+export { Empleado };
 export { Moneda };
+export { Producto };
+export { Rol };
+export { TipoMoneda };
+export { TipoProducto };
+export { Usuario };
+export { Venta };

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Usuario } from '../entities/usuario.entity';
 import { CreateUsuarioDto } from '../common/dto/create-usuario.dto';
 import { UpdateUsuarioDto } from '../common/dto/update-usuario.dto';
+import { LoginUsuarioDto } from '../common/dto/login-usuario.dto';
+import { LogoutUsuarioDto } from '../common/dto/logout-usuario.dto';
 
 @Injectable()
 export class UsuarioService {
@@ -16,9 +18,6 @@ export class UsuarioService {
     usuario.idUsuario = this.nextId++;
     usuario.email = createUsuarioDto.email;
     usuario.contraseña = createUsuarioDto.contraseña;
-    // usuario.rol = undefined as any; // Asigna el rol real si lo tienes
-    usuario.productos = [];
-    usuario.ventas = [];
     this.usuarios.push(usuario);
     return usuario;
   }
@@ -47,12 +46,12 @@ export class UsuarioService {
     this.usuarios = this.usuarios.filter(usuario => usuario.idUsuario !== id);
   }
 
-  async login(email: string, contraseña: string): Promise<string> {
-    const usuario = this.usuarios.find(u => u.email === email && u.contraseña === contraseña);
+  async login(loginUsuarioDto: LoginUsuarioDto): Promise<string> {
+    const usuario = this.usuarios.find(u => u.email === loginUsuarioDto.email && u.contraseña === loginUsuarioDto.contraseña);
     return usuario ? 'Login exitoso' : 'Credenciales incorrectas';
   }
 
-  async logout(idUsuario: number): Promise<string> {
+  async logout(logoutUsuarioDto: LogoutUsuarioDto): Promise<string> {
     // Aquí podrías marcar al usuario como deslogueado, si tuvieras un campo para eso
     return 'Logout exitoso';
   }

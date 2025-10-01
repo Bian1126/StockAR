@@ -1,10 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Usuario } from '../entities/usuario.entity';
+import { Empleado } from './empleado.entity';
 
 @Entity()
 export class Rol {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn({ name: 'id_Rol' })
+  idRol!: number;
 
   @Column()
   nombre!: string;
@@ -12,27 +12,11 @@ export class Rol {
   @Column()
   descripcion!: string;
 
-  @OneToMany(() => Usuario, usuario => usuario.rol)
-  usuarios!: Usuario[];
+  @OneToMany(() => Empleado, empleado => empleado.rol)
+  empleados!: Empleado[];
 
   constructor(init?: Partial<Rol>) {
     Object.assign(this, init);
   }
 
-  // Ver si van o no
-  setNombre(nombre: string) {
-    this.nombre = nombre;
-  }
-
-  getNombre(): string {
-    return this.nombre;
-  }
-
-  setDescripcion(descripcion: string) {
-    this.descripcion = descripcion;
-  }
-
-  getDescripcion(): string {
-    return this.descripcion;
-  }
 }

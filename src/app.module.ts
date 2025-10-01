@@ -5,7 +5,6 @@ import { ProductoModule } from './producto/producto.module';
 import { VentaModule } from './venta/venta.module';
 import { DetalleVentaModule } from './detalle-venta/detalle-venta.module';
 import { RolModule } from './rol/rol.module';
-import { ProveedorModule } from './proveedor/proveedor.module';
 import { MonedaModule } from './moneda/moneda.module';
 import { entities } from './entities';
 
@@ -26,7 +25,6 @@ import { entities } from './entities';
     VentaModule,
     DetalleVentaModule,
     RolModule,
-    ProveedorModule,
     MonedaModule,
   ],
   controllers: [],

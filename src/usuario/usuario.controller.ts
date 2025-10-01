@@ -38,11 +38,11 @@ export class UsuarioController {
 
   @Post('login')
   async login(@Body() loginUsuarioDto: LoginUsuarioDto): Promise<string> {
-    return await this.usuarioService.login(loginUsuarioDto.email, loginUsuarioDto.contraseña);
+    return await this.usuarioService.login(loginUsuarioDto);
   }
 
   @Post('logout')
   async logout(@Body() logoutUsuarioDto: LogoutUsuarioDto): Promise<string> {
-    return await this.usuarioService.logout(logoutUsuarioDto.idUsuario);
+    return await this.usuarioService.logout(logoutUsuarioDto);
   }
 }

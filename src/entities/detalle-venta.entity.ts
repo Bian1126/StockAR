@@ -1,10 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { Producto } from '../entities/producto.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Venta } from '../entities/venta.entity';
+import { TipoProducto } from './tipo-producto.entity';
 
 @Entity()
 export class DetalleVenta {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id_DetalleVenta'})
   idDetalle!: number;
 
   @Column({default: 0 })
@@ -12,19 +12,16 @@ export class DetalleVenta {
 
   @Column('decimal', { precision: 10, scale: 2, default: 0 })
   subtotal!: number;
-  
-  @ManyToOne(() => Producto, producto => producto.detalles)
-  producto!: Producto;
 
-  @ManyToOne(() => Venta, venta => venta.detalle)
-  venta?: Venta;
+  @ManyToOne(() => TipoProducto, { nullable: false })
+  @JoinColumn({ name: 'id_TipoProducto' }) 
+  tipoProducto!: TipoProducto;
+
+  @ManyToOne(() => Venta, venta => venta.detalles, { nullable: false })
+  @JoinColumn({ name: 'id_Venta' }) 
+  venta!: Venta;
 
   constructor(init?: Partial<DetalleVenta>) {
     Object.assign(this, init);
-  }
-
-  calcularSubtotal(): number {
-    this.subtotal = this.cantidad * (this.producto?.calcularPrecioFinal() ?? 0);
-    return this.subtotal;
   }
 }

@@ -1,40 +1,29 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
-import { Usuario } from '../entities/usuario.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { DetalleVenta } from '../entities/detalle-venta.entity';
+import { Empleado } from './empleado.entity';
 
 @Entity()
 export class Venta {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id_Venta' })
   idVenta!: number;
 
   @Column()
-  fecha!: Date;
+  fechaHora!: Date;
 
   @Column('decimal', { precision: 10, scale: 2 })
   total!: number;
 
-  @Column()
-  estado!: string;
-
-  @ManyToOne(() => Usuario, usuario => usuario.ventas)
-  usuario!: Usuario;
+  @ManyToOne(() => Empleado, { nullable: false })
+  @JoinColumn({ name: 'id_Empleado' }) // FK en Venta
+  empleado!: Empleado;
 
   @OneToMany(() => DetalleVenta, detalleVenta => detalleVenta.venta)
-  detalle!: DetalleVenta[];
-  
+  detalles!: DetalleVenta[];
+
   constructor(init?: Partial<Venta>) {
     Object.assign(this, init);
-      if (!this.detalle) {
-        this.detalle = [];
-      }
-  }
-
-  calcularTotal(): number {
-    // Lógica para calcular el total de la venta sumando los subtotales de los detalles
-    return this.detalle.reduce((sum, d) => sum + d.subtotal, 0);
-  }
-
-  generarPDF(): void {
-    // Lógica para generar el comprobante PDF
+    if (!this.detalles) {
+      this.detalles = [];
+    }
   }
 }
