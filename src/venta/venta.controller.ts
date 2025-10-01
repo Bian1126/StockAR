@@ -1,34 +1,34 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
-import { VentaService } from './venta.service';
-import { Venta } from '../entities/venta.entity';
-import { CreateVentaDto } from '../common/dto/create-venta.dto';
-import { UpdateVentaDto } from '../common/dto/update-venta.dto';
+import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { DetalleVentaService } from '../detalle-venta/detalle-venta.service';
+import { CreateDetalleVentaDto } from '../common/dto/create-detalle-venta.dto';
+import { UpdateDetalleVentaDto } from '../common/dto/update-detalle-venta.dto';
 
-@Controller('venta')
-export class VentaController {
-  constructor(private readonly ventaService: VentaService) {}
+@Controller('detalle-ventas')
+export class DetalleVentaController {
+  constructor(private readonly detalleVentaService: DetalleVentaService) {}
 
   @Post()
-  async create(@Body() createVentaDto: CreateVentaDto): Promise<Venta> {
-    return await this.ventaService.create(createVentaDto);
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Venta | undefined> {
-    return await this.ventaService.findOne(Number(id));
+  create(@Body() dto: CreateDetalleVentaDto) {
+    return this.detalleVentaService.create(dto);
   }
 
   @Get()
-  async findAll(): Promise<Venta[]> {
-    return await this.ventaService.findAll();
+  findAll() {
+    return this.detalleVentaService.findAll();
   }
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() updateVentaDto: UpdateVentaDto): Promise<Venta | null> {
-    return await this.ventaService.update(Number(id), updateVentaDto);
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.detalleVentaService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateDetalleVentaDto) {
+    return this.detalleVentaService.update(+id, dto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<void> {
-    return await this.ventaService.remove(Number(id));
+  remove(@Param('id') id: string) {
+    return this.detalleVentaService.remove(+id);
   }
 }

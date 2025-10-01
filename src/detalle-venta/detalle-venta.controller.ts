@@ -1,32 +1,34 @@
-import { Controller, Get, Post, Body, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
 import { DetalleVentaService } from './detalle-venta.service';
-import { DetalleVenta } from '../entities/detalle-venta.entity';
 import { CreateDetalleVentaDto } from '../common/dto/create-detalle-venta.dto';
-import { UpdateDetalleVentaDto } from 'common/dto/update-detalle-venta.dto';
+import { UpdateDetalleVentaDto } from '../common/dto/update-detalle-venta.dto';
 
-@Controller('detalle-venta')
+@Controller('detalle-ventas')
 export class DetalleVentaController {
   constructor(private readonly detalleVentaService: DetalleVentaService) {}
 
   @Post()
-  async create(@Body() createDetalleVentaDto: CreateDetalleVentaDto): Promise<DetalleVenta> {
-    return await this.detalleVentaService.create(createDetalleVentaDto);
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<DetalleVenta> {
-    const detalle = await this.detalleVentaService.findOne(Number(id));
-    if (!detalle) throw new NotFoundException(`DetalleVenta no encontrado`);
-    return detalle;
+  create(@Body() dto: CreateDetalleVentaDto) {
+    return this.detalleVentaService.create(dto);
   }
 
   @Get()
-  async findAll(): Promise<DetalleVenta[]> {
-    return await this.detalleVentaService.findAll();
+  findAll() {
+    return this.detalleVentaService.findAll();
   }
 
-  @Get('vista/all')
-  async findAllForView(): Promise<any[]> {
-    return await this.detalleVentaService.findAllForView();
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.detalleVentaService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateDetalleVentaDto) {
+    return this.detalleVentaService.update(+id, dto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.detalleVentaService.remove(+id);
   }
 }

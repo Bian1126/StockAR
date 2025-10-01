@@ -1,84 +1,65 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Producto } from '../entities/producto.entity';
-import { UpdateProductoDto } from '../common/dto/update-producto.dto';
+import { TipoProducto } from '../entities/tipo-producto.entity';
 import { Moneda } from '../entities/moneda.entity';
 import { CreateProductoDto } from '../common/dto/create-producto.dto';
+import { UpdateProductoDto } from '../common/dto/update-producto.dto';
 
 @Injectable()
 export class ProductoService {
-  private productos: Producto[] = [];
-  private monedas: Moneda[] = [
-    new Moneda({ idMoneda: 1, nombre: 'ARS', cotizacion: 1 }),
-    new Moneda({ idMoneda: 2, nombre: 'USD', cotizacion: 350 }),
-    new Moneda({ idMoneda: 3, nombre: 'EUR', cotizacion: 380 })
-  ];
+  constructor(
+    @InjectRepository(Producto)
+    private readonly productoRepository: Repository<Producto>,
+    @InjectRepository(TipoProducto)
+    private readonly tipoProductoRepository: Repository<TipoProducto>,
+    @InjectRepository(Moneda)
+    private readonly monedaRepository: Repository<Moneda>,
+  ) {}
 
-  async create(createProductoDto: CreateProductoDto): Promise<Producto> {
-    const moneda = this.monedas.find(m => m.idMoneda === createProductoDto.monedaId);
-    const producto = new Producto({
-      ...createProductoDto,
-      idProducto: this.productos.length + 1,
-      moneda: moneda,
-      detalles: [],
-      usuario: undefined,
-      precioVenta: (
-        createProductoDto.precioNeto +
-        (createProductoDto.precioNeto * createProductoDto.iva) / 100 +
-        (createProductoDto.precioNeto * createProductoDto.ganancia) / 100
-      ),
-      stock: createProductoDto.stock // inicializa el stock
+  async create(data: CreateProductoDto): Promise<Producto> {
+    const tipoProducto = await this.tipoProductoRepository.findOne({ where: { idTipoProducto: data.idTipoProducto } });
+    if (!tipoProducto) throw new BadRequestException('Tipo de producto no encontrado');
+    const moneda = await this.monedaRepository.findOne({ where: { idMoneda: data.idMoneda } });
+    if (!moneda) throw new BadRequestException('Moneda no encontrada');
+
+    const producto = this.productoRepository.create({
+      ...data,
+      tipoProducto,
+      moneda,
     });
-    this.productos.push(producto);
+    return await this.productoRepository.save(producto);
+  }
+
+  async findAll(): Promise<Producto[]> {
+    return await this.productoRepository.find({ relations: ['tipoProducto', 'moneda'] });
+  }
+
+  async findOne(id: number): Promise<Producto> {
+    const producto = await this.productoRepository.findOne({ where: { idProducto: id }, relations: ['tipoProducto', 'moneda'] });
+    if (!producto) throw new NotFoundException('Producto no encontrado');
     return producto;
   }
 
-  findAll(): Producto[] {
-    return this.productos;
-  }
-
-  findOne(id: string | number): Producto | undefined {
-    return this.productos.find(p => p.idProducto === Number(id));
-  }
-
-  remove(id: string | number): void {
-    const index = this.productos.findIndex(p => p.idProducto === Number(id));
-    if (index !== -1) {
-      this.productos.splice(index, 1);
+  async update(id: number, data: UpdateProductoDto): Promise<Producto> {
+    const producto = await this.findOne(id);
+    if (data.idTipoProducto) {
+      const tipoProducto = await this.tipoProductoRepository.findOne({ where: { idTipoProducto: data.idTipoProducto } });
+      if (!tipoProducto) throw new BadRequestException('Tipo de producto no encontrado');
+      producto.tipoProducto = tipoProducto;
     }
+    if (data.idMoneda) {
+      const moneda = await this.monedaRepository.findOne({ where: { idMoneda: data.idMoneda } });
+      if (!moneda) throw new BadRequestException('Moneda no encontrada');
+      producto.moneda = moneda;
+    }
+    Object.assign(producto, data);
+    return await this.productoRepository.save(producto);
   }
 
-  async update(id: number, updateProductoDto: UpdateProductoDto): Promise<Producto | null> {
-    const index = this.productos.findIndex(p => p.idProducto === id);
-    if (index !== -1) {
-      // Permite modificar stock sumando/restando cantidad
-      let nuevoStock = this.productos[index].stock;
-      if (typeof updateProductoDto.stock === 'number') {
-        nuevoStock = updateProductoDto.stock;
-      }
-      this.productos[index] = new Producto({
-        ...this.productos[index],
-        ...updateProductoDto,
-        stock: nuevoStock
-      });
-      return this.productos[index];
-    }
-    return null;
-  }
-
-  updateStock(idProducto: number, cantidad: number): Producto {
-    const producto = this.productos.find(p => p.idProducto === idProducto);
-    if (producto) {
-      producto.stock += cantidad; // suma o resta stock
-      return producto;
-    }
-    throw new Error('Producto no encontrado');
-  }
-
-  calcularPrecioFinal(idProducto: number): number {
-    const producto = this.productos.find(p => p.idProducto === idProducto);
-    if (producto) {
-      return producto.precioNeto + (producto.precioNeto * producto.iva) / 100 + (producto.precioNeto * producto.ganancia) / 100;
-    }
-    throw new Error('Producto no encontrado');
+  async remove(id: number): Promise<void> {
+    const producto = await this.findOne(id);
+    await this.productoRepository.remove(producto);
   }
 }
