@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsPositive, IsInt } from 'class-validator';
 
 export class CreateMonedaDto {
   @IsString()
@@ -8,4 +8,8 @@ export class CreateMonedaDto {
   @IsNumber()
   @IsPositive()
   cotizacion!: number;
+
+  @IsInt()
+  @IsPositive()
+  tipoMonedaId!: number;
 }
