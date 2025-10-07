@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, NotFoundException } from '@nestjs/common';
 import { MonedaService } from '../moneda/moneda.service';
 import { CreateMonedaDto } from '../common/dto/create-moneda.dto';
 import { UpdateMonedaDto } from '../common/dto/update-moneda.dto';
@@ -19,16 +19,23 @@ export class MonedaController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.monedaService.findOne(Number(id));
+    const moneda = await this.monedaService.findOne(Number(id));
+    if (!moneda) throw new NotFoundException('Moneda no encontrada');
+    return moneda;
   }
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateMonedaDto: UpdateMonedaDto) {
-    return this.monedaService.update(Number(id), updateMonedaDto);
+    const updated = await this.monedaService.update(Number(id), updateMonedaDto as any);
+    if (!updated) throw new NotFoundException('Moneda no encontrada');
+    return updated;
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.monedaService.remove(Number(id));
+    const moneda = await this.monedaService.findOne(Number(id));
+    if (!moneda) throw new NotFoundException('Moneda no encontrada');
+    await this.monedaService.remove(Number(id));
+    return { message: 'Moneda eliminada' };
   }
 }
