@@ -11,17 +11,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Moneda = void 0;
 const typeorm_1 = require("typeorm");
-const producto_entity_1 = require("../entities/producto.entity");
+const producto_entity_1 = require("./producto.entity");
+const tipo_moneda_entity_1 = require("./tipo-moneda.entity");
 let Moneda = class Moneda {
     constructor(init) {
         Object.assign(this, init);
     }
-    actualizarCotizacion(nuevaCotizacion) {
-        this.cotizacion = nuevaCotizacion;
-    }
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)({ name: 'id_Moneda' }),
     __metadata("design:type", Number)
 ], Moneda.prototype, "idMoneda", void 0);
 __decorate([
@@ -32,6 +30,11 @@ __decorate([
     (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2 }),
     __metadata("design:type", Number)
 ], Moneda.prototype, "cotizacion", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => tipo_moneda_entity_1.TipoMoneda, { nullable: false }),
+    (0, typeorm_1.JoinColumn)({ name: 'id_TipoMoneda' }),
+    __metadata("design:type", tipo_moneda_entity_1.TipoMoneda)
+], Moneda.prototype, "tipoMoneda", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => producto_entity_1.Producto, producto => producto.moneda),
     __metadata("design:type", Array)

@@ -1,39 +1,54 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DetalleVenta } from '../entities/detalle-venta.entity';
 import { CreateDetalleVentaDto } from '../common/dto/create-detalle-venta.dto';
 import { UpdateDetalleVentaDto } from '../common/dto/update-detalle-venta.dto';
-import { Venta } from '../entities/venta.entity';
-import { Producto } from '../entities/producto.entity';
+import { ProductoService } from '../producto/producto.service';
 
 @Injectable()
 export class DetalleVentaService {
   constructor(
     @InjectRepository(DetalleVenta)
     private readonly detalleVentaRepository: Repository<DetalleVenta>,
-
-    @InjectRepository(Venta)
-    private readonly ventaRepository: Repository<Venta>,
-
-    @InjectRepository(Producto)
-    private readonly productoRepository: Repository<Producto>,
+    
+    // ✅ Usar ProductoService en lugar de repositorio directo
+    private readonly productoService: ProductoService,
   ) {}
 
-  async create(dto: CreateDetalleVentaDto): Promise<DetalleVenta> {
-    const venta = await this.ventaRepository.findOne({ where: { id: dto.ventaId } });
-    const producto = await this.productoRepository.findOne({ where: { id: dto.productoId } });
-
-    if (!venta) throw new NotFoundException(`Venta con id ${dto.ventaId} no encontrada`);
-    if (!producto) throw new NotFoundException(`Producto con id ${dto.productoId} no encontrado`);
-
+  // ✅ Método para crear detalle desde venta (uso interno)
+  async createFromVenta(
+    venta: any, 
+    productoId: number, 
+    cantidad: number
+  ): Promise<{ detalle: DetalleVenta, subtotal: number }> {
+    
+    // ✅ Validar y obtener producto usando ProductoService
+    const producto = await this.productoService.findOne(productoId);
+    await this.productoService.validarStock(productoId, cantidad);
+    
+    // ✅ Calcular subtotal (lógica de DetalleVenta)
+    const subtotal = this.calcularSubtotal(producto.precioVenta, cantidad);
+    
+    // Crear detalle
     const detalle = this.detalleVentaRepository.create({
-      cantidad: dto.cantidad,
-      venta,
+      cantidad,
+      subtotal,
       producto,
+      venta
     });
+    
+    return { detalle, subtotal };
+  }
 
-    return this.detalleVentaRepository.save(detalle);
+  // ✅ Lógica de negocio: calcular subtotal
+  private calcularSubtotal(precioUnitario: number, cantidad: number): number {
+    return precioUnitario * cantidad;
+  }
+
+  async create(dto: CreateDetalleVentaDto): Promise<DetalleVenta> {
+    // Este método se mantiene para uso directo del API
+    throw new BadRequestException('Use createFromVenta para crear detalles desde ventas');
   }
 
   async findAll(): Promise<DetalleVenta[]> {
@@ -42,7 +57,7 @@ export class DetalleVentaService {
 
   async findOne(id: number): Promise<DetalleVenta> {
     const detalle = await this.detalleVentaRepository.findOne({
-      where: { id },
+      where: { idDetalle: id }, // ✅ Usar el campo correcto
       relations: ['venta', 'producto'],
     });
 

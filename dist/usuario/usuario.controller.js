@@ -39,10 +39,10 @@ let UsuarioController = class UsuarioController {
         return await this.usuarioService.remove(Number(id));
     }
     async login(loginUsuarioDto) {
-        return await this.usuarioService.login(loginUsuarioDto.email, loginUsuarioDto.contraseña);
+        return await this.usuarioService.login(loginUsuarioDto);
     }
     async logout(logoutUsuarioDto) {
-        return await this.usuarioService.logout(logoutUsuarioDto.idUsuario);
+        return await this.usuarioService.logout(logoutUsuarioDto);
     }
 };
 __decorate([

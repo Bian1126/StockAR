@@ -5,45 +5,48 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RolService = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
 const rol_entity_1 = require("../entities/rol.entity");
 let RolService = class RolService {
-    constructor() {
-        this.roles = [];
-        this.nextId = 1;
+    constructor(rolRepository) {
+        this.rolRepository = rolRepository;
     }
     async create(createRolDto) {
-        const rol = { ...createRolDto, id: this.nextId++ };
-        this.roles.push(rol);
-        return rol;
+        const rol = this.rolRepository.create(createRolDto);
+        return await this.rolRepository.save(rol);
     }
     async findAll() {
-        return this.roles;
+        return await this.rolRepository.find({ relations: ['empleados'] });
     }
     async findOne(id) {
-        return this.roles.find(role => role.id === id);
+        const rol = await this.rolRepository.findOne({ where: { idRol: id }, relations: ['empleados'] });
+        if (!rol)
+            throw new common_1.NotFoundException('Rol no encontrado');
+        return rol;
     }
     async update(id, updateRolDto) {
-        const index = this.roles.findIndex(role => role.id === id);
-        if (index !== -1) {
-            this.roles[index] = new rol_entity_1.Rol({
-                ...this.roles[index],
-                ...updateRolDto
-            });
-            return this.roles[index];
-        }
-        return null;
+        const rol = await this.findOne(id);
+        Object.assign(rol, updateRolDto);
+        return await this.rolRepository.save(rol);
     }
     async remove(id) {
-        const index = this.roles.findIndex(role => role.id === id);
-        if (index !== -1) {
-            this.roles.splice(index, 1);
-        }
+        const rol = await this.findOne(id);
+        await this.rolRepository.remove(rol);
     }
 };
 RolService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(rol_entity_1.Rol)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], RolService);
 exports.RolService = RolService;

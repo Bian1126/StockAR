@@ -23,4 +23,9 @@ __decorate([
     (0, class_validator_1.IsPositive)(),
     __metadata("design:type", Number)
 ], CreateMonedaDto.prototype, "cotizacion", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsPositive)(),
+    __metadata("design:type", Number)
+], CreateMonedaDto.prototype, "tipoMonedaId", void 0);
 exports.CreateMonedaDto = CreateMonedaDto;

@@ -16,21 +16,25 @@ exports.DetalleVentaController = void 0;
 const common_1 = require("@nestjs/common");
 const detalle_venta_service_1 = require("./detalle-venta.service");
 const create_detalle_venta_dto_1 = require("../common/dto/create-detalle-venta.dto");
+const update_detalle_venta_dto_1 = require("../common/dto/update-detalle-venta.dto");
 let DetalleVentaController = class DetalleVentaController {
     constructor(detalleVentaService) {
         this.detalleVentaService = detalleVentaService;
     }
-    async create(createDetalleVentaDto) {
-        return await this.detalleVentaService.create(createDetalleVentaDto);
+    create(dto) {
+        return this.detalleVentaService.create(dto);
     }
-    async findOne(id) {
-        const detalle = await this.detalleVentaService.findOne(Number(id));
-        if (!detalle)
-            throw new common_1.NotFoundException(`DetalleVenta no encontrado`);
-        return detalle;
+    findAll() {
+        return this.detalleVentaService.findAll();
     }
-    async findAll() {
-        return await this.detalleVentaService.findAll();
+    findOne(id) {
+        return this.detalleVentaService.findOne(+id);
+    }
+    update(id, dto) {
+        return this.detalleVentaService.update(+id, dto);
+    }
+    remove(id) {
+        return this.detalleVentaService.remove(+id);
     }
 };
 __decorate([
@@ -38,23 +42,38 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_detalle_venta_dto_1.CreateDetalleVentaDto]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], DetalleVentaController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], DetalleVentaController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], DetalleVentaController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], DetalleVentaController.prototype, "findAll", null);
+    __metadata("design:paramtypes", [String, update_detalle_venta_dto_1.UpdateDetalleVentaDto]),
+    __metadata("design:returntype", void 0)
+], DetalleVentaController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], DetalleVentaController.prototype, "remove", null);
 DetalleVentaController = __decorate([
-    (0, common_1.Controller)('detalle-venta'),
+    (0, common_1.Controller)('detalle-ventas'),
     __metadata("design:paramtypes", [detalle_venta_service_1.DetalleVentaService])
 ], DetalleVentaController);
 exports.DetalleVentaController = DetalleVentaController;

@@ -11,29 +11,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Rol = void 0;
 const typeorm_1 = require("typeorm");
-const usuario_entity_1 = require("../entities/usuario.entity");
+const empleado_entity_1 = require("./empleado.entity");
+const permission_entity_1 = require("./permission.entity");
 let Rol = class Rol {
     constructor(init) {
         Object.assign(this, init);
     }
-    // Ver si van o no
-    setNombre(nombre) {
-        this.nombre = nombre;
-    }
-    getNombre() {
-        return this.nombre;
-    }
-    setDescripcion(descripcion) {
-        this.descripcion = descripcion;
-    }
-    getDescripcion() {
-        return this.descripcion;
-    }
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)({ name: 'id_Rol' }),
     __metadata("design:type", Number)
-], Rol.prototype, "id", void 0);
+], Rol.prototype, "idRol", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
@@ -43,9 +31,14 @@ __decorate([
     __metadata("design:type", String)
 ], Rol.prototype, "descripcion", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => usuario_entity_1.Usuario, usuario => usuario.rol),
+    (0, typeorm_1.OneToMany)(() => empleado_entity_1.Empleado, empleado => empleado.rol),
     __metadata("design:type", Array)
-], Rol.prototype, "usuarios", void 0);
+], Rol.prototype, "empleados", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => permission_entity_1.Permission, (permission) => permission.roles),
+    (0, typeorm_1.JoinTable)({ name: 'rol_permissions' }),
+    __metadata("design:type", Array)
+], Rol.prototype, "permissions", void 0);
 Rol = __decorate([
     (0, typeorm_1.Entity)(),
     __metadata("design:paramtypes", [Object])

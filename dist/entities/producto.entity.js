@@ -11,31 +11,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Producto = void 0;
 const typeorm_1 = require("typeorm");
-const moneda_entity_1 = require("../entities/moneda.entity");
-const proveedor_entity_1 = require("./proveedor.entity");
-const usuario_entity_1 = require("./usuario.entity");
-const detalle_venta_entity_1 = require("./detalle-venta.entity");
+const moneda_entity_1 = require("./moneda.entity");
+const tipo_producto_entity_1 = require("./tipo-producto.entity");
 let Producto = class Producto {
     constructor(init) {
         Object.assign(this, init);
     }
-    calcularPrecioFinal() {
-        //CAlculo de precioNeto + IVA + Ganancia
-        return (this.precioNeto +
-            (this.precioNeto * this.iva) / 100 +
-            (this.precioNeto * this.ganancia) / 100);
-    }
-    actualizarStock(cantidad) {
-        this.stock -= cantidad;
-    }
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)({ name: 'id_Producto' }),
     __metadata("design:type", Number)
 ], Producto.prototype, "idProducto", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], Producto.prototype, "codigo", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
@@ -50,17 +39,13 @@ __decorate([
     __metadata("design:type", String)
 ], Producto.prototype, "marca", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Producto.prototype, "rubro", void 0);
-__decorate([
     (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2 }),
     __metadata("design:type", Number)
 ], Producto.prototype, "precioNeto", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => moneda_entity_1.Moneda, moneda => moneda.productos),
-    __metadata("design:type", moneda_entity_1.Moneda)
-], Producto.prototype, "moneda", void 0);
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2 }),
+    __metadata("design:type", Number)
+], Producto.prototype, "precioVenta", void 0);
 __decorate([
     (0, typeorm_1.Column)('decimal', { precision: 5, scale: 2 }),
     __metadata("design:type", Number)
@@ -74,17 +59,15 @@ __decorate([
     __metadata("design:type", Number)
 ], Producto.prototype, "stock", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => proveedor_entity_1.Proveedor, proveedor => proveedor.productos),
-    __metadata("design:type", proveedor_entity_1.Proveedor)
-], Producto.prototype, "proveedor", void 0);
+    (0, typeorm_1.ManyToOne)(() => tipo_producto_entity_1.TipoProducto, { nullable: false }),
+    (0, typeorm_1.JoinColumn)({ name: 'id_TipoProducto' }),
+    __metadata("design:type", tipo_producto_entity_1.TipoProducto)
+], Producto.prototype, "tipoProducto", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => usuario_entity_1.Usuario, usuario => usuario.productos, { nullable: true }),
-    __metadata("design:type", usuario_entity_1.Usuario)
-], Producto.prototype, "usuario", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => detalle_venta_entity_1.DetalleVenta, detalleVenta => detalleVenta.producto),
-    __metadata("design:type", Array)
-], Producto.prototype, "detalles", void 0);
+    (0, typeorm_1.ManyToOne)(() => moneda_entity_1.Moneda, { nullable: false }),
+    (0, typeorm_1.JoinColumn)({ name: 'id_Moneda' }),
+    __metadata("design:type", moneda_entity_1.Moneda)
+], Producto.prototype, "moneda", void 0);
 Producto = __decorate([
     (0, typeorm_1.Entity)(),
     __metadata("design:paramtypes", [Object])

@@ -15,14 +15,13 @@ let UsuarioService = class UsuarioService {
         this.nextId = 1;
     }
     async create(createUsuarioDto) {
+        if (createUsuarioDto.contraseña !== createUsuarioDto.verificarContraseña) {
+            throw new Error('Las contraseñas no coinciden');
+        }
         const usuario = new usuario_entity_1.Usuario();
         usuario.idUsuario = this.nextId++;
-        usuario.nombre = createUsuarioDto.nombre;
         usuario.email = createUsuarioDto.email;
         usuario.contraseña = createUsuarioDto.contraseña;
-        usuario.rol = undefined; // Asigna el rol real si lo tienes
-        usuario.productos = [];
-        usuario.ventas = [];
         this.usuarios.push(usuario);
         return usuario;
     }
@@ -46,11 +45,11 @@ let UsuarioService = class UsuarioService {
     async remove(id) {
         this.usuarios = this.usuarios.filter(usuario => usuario.idUsuario !== id);
     }
-    async login(email, contraseña) {
-        const usuario = this.usuarios.find(u => u.email === email && u.contraseña === contraseña);
+    async login(loginUsuarioDto) {
+        const usuario = this.usuarios.find(u => u.email === loginUsuarioDto.email && u.contraseña === loginUsuarioDto.contraseña);
         return usuario ? 'Login exitoso' : 'Credenciales incorrectas';
     }
-    async logout(idUsuario) {
+    async logout(logoutUsuarioDto) {
         // Aquí podrías marcar al usuario como deslogueado, si tuvieras un campo para eso
         return 'Logout exitoso';
     }

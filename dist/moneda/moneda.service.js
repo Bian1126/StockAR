@@ -8,13 +8,28 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MonedaService = void 0;
 const common_1 = require("@nestjs/common");
+const moneda_entity_1 = require("../entities/moneda.entity");
 let MonedaService = class MonedaService {
     constructor() {
+        this.tipoMonedas = [
+            { idTipoMoneda: 1, nombre: 'Oficial', descripcion: 'Tipo oficial' },
+            { idTipoMoneda: 2, nombre: 'Paralelo', descripcion: 'Tipo paralelo' },
+        ];
         this.monedas = [];
         this.nextId = 1;
     }
+    findTipoById(id) {
+        return this.tipoMonedas.find(t => t.idTipoMoneda === id);
+    }
     async create(data) {
-        const moneda = { ...data, idMoneda: this.nextId++ };
+        const tipo = this.findTipoById(data.tipoMonedaId);
+        const moneda = new moneda_entity_1.Moneda({
+            idMoneda: this.nextId++,
+            nombre: data.nombre,
+            cotizacion: data.cotizacion,
+            tipoMoneda: tipo,
+            productos: [],
+        });
         this.monedas.push(moneda);
         return moneda;
     }
@@ -26,17 +41,20 @@ let MonedaService = class MonedaService {
     }
     async update(id, data) {
         const moneda = this.monedas.find(m => m.idMoneda === id);
-        if (moneda) {
-            Object.assign(moneda, data);
-            return moneda;
+        if (!moneda)
+            return null;
+        if (typeof data.tipoMonedaId === 'number') {
+            const tipo = this.findTipoById(data.tipoMonedaId);
+            if (tipo)
+                moneda.tipoMoneda = tipo;
         }
-        return null;
+        Object.assign(moneda, data);
+        return moneda;
     }
     async remove(id) {
         const index = this.monedas.findIndex(m => m.idMoneda === id);
-        if (index !== -1) {
+        if (index !== -1)
             this.monedas.splice(index, 1);
-        }
     }
 };
 MonedaService = __decorate([

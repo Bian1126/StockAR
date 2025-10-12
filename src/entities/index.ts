@@ -7,6 +7,7 @@ import { TipoMoneda } from './tipo-moneda.entity';
 import { TipoProducto } from './tipo-producto.entity';
 import { Usuario } from './usuario.entity';
 import { Venta } from './venta.entity';
+import { Permission } from './permission.entity';
 
 
 export const entities = [
@@ -19,6 +20,7 @@ export const entities = [
   TipoProducto,
   Usuario,
   Venta,
+  Permission,
 ];
 
 export { DetalleVenta };
@@ -30,3 +32,4 @@ export { TipoMoneda };
 export { TipoProducto };
 export { Usuario };
 export { Venta };
+export { Permission };

@@ -12,13 +12,18 @@ const detalle_venta_service_1 = require("./detalle-venta.service");
 const detalle_venta_controller_1 = require("./detalle-venta.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const detalle_venta_entity_1 = require("../entities/detalle-venta.entity");
+const producto_module_1 = require("../producto/producto.module");
 let DetalleVentaModule = class DetalleVentaModule {
 };
 DetalleVentaModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([detalle_venta_entity_1.DetalleVenta])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([detalle_venta_entity_1.DetalleVenta]),
+            producto_module_1.ProductoModule, // ✅ Importar para usar ProductoService
+        ],
         controllers: [detalle_venta_controller_1.DetalleVentaController],
         providers: [detalle_venta_service_1.DetalleVentaService],
+        exports: [detalle_venta_service_1.DetalleVentaService], // ✅ Exportar para uso en VentaModule
     })
 ], DetalleVentaModule);
 exports.DetalleVentaModule = DetalleVentaModule;

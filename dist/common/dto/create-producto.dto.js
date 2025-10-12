@@ -16,7 +16,7 @@ class CreateProductoDto {
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], CreateProductoDto.prototype, "codigo", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
@@ -34,20 +34,15 @@ __decorate([
     __metadata("design:type", String)
 ], CreateProductoDto.prototype, "marca", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateProductoDto.prototype, "rubro", void 0);
-__decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsPositive)(),
     __metadata("design:type", Number)
 ], CreateProductoDto.prototype, "precioNeto", void 0);
 __decorate([
-    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsPositive)(),
     __metadata("design:type", Number)
-], CreateProductoDto.prototype, "monedaId", void 0);
+], CreateProductoDto.prototype, "precioVenta", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsPositive)(),
@@ -60,15 +55,17 @@ __decorate([
 ], CreateProductoDto.prototype, "ganancia", void 0);
 __decorate([
     (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsPositive)(),
     __metadata("design:type", Number)
 ], CreateProductoDto.prototype, "stock", void 0);
 __decorate([
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.IsPositive)(),
     __metadata("design:type", Number)
-], CreateProductoDto.prototype, "proveedorId", void 0);
+], CreateProductoDto.prototype, "idTipoProducto", void 0);
 __decorate([
     (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsPositive)(),
     __metadata("design:type", Number)
-], CreateProductoDto.prototype, "usuarioId", void 0);
+], CreateProductoDto.prototype, "idMoneda", void 0);
 exports.CreateProductoDto = CreateProductoDto;
