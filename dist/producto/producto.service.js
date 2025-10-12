@@ -5,73 +5,95 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductoService = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
 const producto_entity_1 = require("../entities/producto.entity");
+const tipo_producto_entity_1 = require("../entities/tipo-producto.entity");
 const moneda_entity_1 = require("../entities/moneda.entity");
 let ProductoService = class ProductoService {
-    constructor() {
-        this.productos = [];
-        this.monedas = [
-            new moneda_entity_1.Moneda({ idMoneda: 1, nombre: 'ARS', cotizacion: 1 }),
-            new moneda_entity_1.Moneda({ idMoneda: 2, nombre: 'USD', cotizacion: 350 }),
-            new moneda_entity_1.Moneda({ idMoneda: 3, nombre: 'EUR', cotizacion: 380 })
-        ];
+    constructor(productoRepository, tipoProductoRepository, monedaRepository) {
+        this.productoRepository = productoRepository;
+        this.tipoProductoRepository = tipoProductoRepository;
+        this.monedaRepository = monedaRepository;
     }
-    async create(createProductoDto) {
-        const moneda = this.monedas.find(m => m.idMoneda === createProductoDto.monedaId);
-        const producto = new producto_entity_1.Producto({
-            ...createProductoDto,
-            idProducto: this.productos.length + 1,
-            moneda: moneda,
-            proveedor: undefined,
-            usuario: undefined,
-            detalles: []
+    async create(data) {
+        const tipoProducto = await this.tipoProductoRepository.findOne({ where: { idTipoProducto: data.idTipoProducto } });
+        if (!tipoProducto)
+            throw new common_1.BadRequestException('Tipo de producto no encontrado');
+        const moneda = await this.monedaRepository.findOne({ where: { idMoneda: data.idMoneda } });
+        if (!moneda)
+            throw new common_1.BadRequestException('Moneda no encontrada');
+        const producto = this.productoRepository.create({
+            ...data,
+            tipoProducto,
+            moneda,
         });
-        this.productos.push(producto);
+        return await this.productoRepository.save(producto);
+    }
+    async findAll() {
+        return await this.productoRepository.find({ relations: ['tipoProducto', 'moneda'] });
+    }
+    async findOne(id) {
+        const producto = await this.productoRepository.findOne({ where: { idProducto: id }, relations: ['tipoProducto', 'moneda'] });
+        if (!producto)
+            throw new common_1.NotFoundException('Producto no encontrado');
         return producto;
     }
-    findAll() {
-        return this.productos;
+    async update(id, data) {
+        const producto = await this.findOne(id);
+        if (data.idTipoProducto) {
+            const tipoProducto = await this.tipoProductoRepository.findOne({ where: { idTipoProducto: data.idTipoProducto } });
+            if (!tipoProducto)
+                throw new common_1.BadRequestException('Tipo de producto no encontrado');
+            producto.tipoProducto = tipoProducto;
+        }
+        if (data.idMoneda) {
+            const moneda = await this.monedaRepository.findOne({ where: { idMoneda: data.idMoneda } });
+            if (!moneda)
+                throw new common_1.BadRequestException('Moneda no encontrada');
+            producto.moneda = moneda;
+        }
+        Object.assign(producto, data);
+        return await this.productoRepository.save(producto);
     }
-    findOne(id) {
-        return this.productos.find(p => p.idProducto === Number(id));
+    async remove(id) {
+        const producto = await this.findOne(id);
+        await this.productoRepository.remove(producto);
     }
-    remove(id) {
-        const index = this.productos.findIndex(p => p.idProducto === Number(id));
-        if (index !== -1) {
-            this.productos.splice(index, 1);
+    // Métodos para manejo de ventas
+    async validarStock(idProducto, cantidadRequerida) {
+        const producto = await this.findOne(idProducto);
+        if (producto.stock < cantidadRequerida) {
+            throw new common_1.BadRequestException(`Stock insuficiente para ${producto.nombre}. Stock disponible: ${producto.stock}, requerido: ${cantidadRequerida}`);
         }
     }
-    async update(id, updateProductoDto) {
-        const index = this.productos.findIndex(p => p.idProducto === id);
-        if (index !== -1) {
-            this.productos[index] = new producto_entity_1.Producto({
-                ...this.productos[index],
-                ...updateProductoDto
-            });
-            return this.productos[index];
-        }
-        return null;
+    async reducirStock(idProducto, cantidad) {
+        const producto = await this.findOne(idProducto);
+        producto.stock -= cantidad;
+        await this.productoRepository.save(producto);
     }
-    updateStock(idProducto, cantidad) {
-        const producto = this.productos.find(p => p.idProducto === idProducto);
-        if (producto) {
-            producto.stock += cantidad;
-            return producto;
-        }
-        throw new Error('Producto no encontrado');
-    }
-    calcularPrecioFinal(idProducto) {
-        const producto = this.productos.find(p => p.idProducto === idProducto);
-        if (producto) {
-            return producto.precioNeto + (producto.precioNeto * producto.iva) / 100 + (producto.precioNeto * producto.ganancia) / 100;
-        }
-        throw new Error('Producto no encontrado');
+    async aumentarStock(idProducto, cantidad) {
+        const producto = await this.findOne(idProducto);
+        producto.stock += cantidad;
+        await this.productoRepository.save(producto);
     }
 };
 ProductoService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(producto_entity_1.Producto)),
+    __param(1, (0, typeorm_1.InjectRepository)(tipo_producto_entity_1.TipoProducto)),
+    __param(2, (0, typeorm_1.InjectRepository)(moneda_entity_1.Moneda)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository])
 ], ProductoService);
 exports.ProductoService = ProductoService;

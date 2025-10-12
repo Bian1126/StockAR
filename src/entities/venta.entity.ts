@@ -22,8 +22,5 @@ export class Venta {
 
   constructor(init?: Partial<Venta>) {
     Object.assign(this, init);
-    if (!this.detalles) {
-      this.detalles = [];
-    }
   }
 }

@@ -21,34 +21,23 @@ let ProductoController = class ProductoController {
     constructor(productoService) {
         this.productoService = productoService;
     }
-    async create(createProductoDto) {
-        return this.productoService.create(createProductoDto);
+    async create(data) {
+        return await this.productoService.create(data);
     }
     async findAll() {
-        return this.productoService.findAll();
+        return await this.productoService.findAll();
     }
     async findOne(id) {
-        return this.productoService.findOne(id);
+        const producto = await this.productoService.findOne(Number(id));
+        if (!producto)
+            throw new common_1.NotFoundException('Producto no encontrado');
+        return producto;
+    }
+    async update(id, data) {
+        return await this.productoService.update(Number(id), data);
     }
     async remove(id) {
-        return this.productoService.remove(id);
-    }
-    async update(id, updateProductoDto) {
-        const producto = await this.productoService.update(Number(id), updateProductoDto);
-        if (!producto) {
-            throw new common_1.NotFoundException('Producto no encontrado');
-        }
-        return producto;
-    }
-    async updateStock(id, cantidad) {
-        const producto = await this.productoService.updateStock(Number(id), Number(cantidad));
-        if (!producto) {
-            throw new common_1.NotFoundException('Producto no encontrado');
-        }
-        return producto;
-    }
-    async calcularPrecioFinal(id) {
-        return this.productoService.calcularPrecioFinal(Number(id));
+        return await this.productoService.remove(Number(id));
     }
 };
 __decorate([
@@ -72,14 +61,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductoController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], ProductoController.prototype, "remove", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
+    (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -87,22 +69,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductoController.prototype, "update", null);
 __decorate([
-    (0, common_1.Patch)(':id/stock/:cantidad'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Param)('cantidad')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", Promise)
-], ProductoController.prototype, "updateStock", null);
-__decorate([
-    (0, common_1.Get)(':id/precio-final'),
+    (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], ProductoController.prototype, "calcularPrecioFinal", null);
+], ProductoController.prototype, "remove", null);
 ProductoController = __decorate([
-    (0, common_1.Controller)('productos'),
+    (0, common_1.Controller)('producto'),
     __metadata("design:paramtypes", [producto_service_1.ProductoService])
 ], ProductoController);
 exports.ProductoController = ProductoController;

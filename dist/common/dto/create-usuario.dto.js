@@ -14,11 +14,6 @@ const class_validator_1 = require("class-validator");
 class CreateUsuarioDto {
 }
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateUsuarioDto.prototype, "nombre", void 0);
-__decorate([
     (0, class_validator_1.IsEmail)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
@@ -29,8 +24,8 @@ __decorate([
     __metadata("design:type", String)
 ], CreateUsuarioDto.prototype, "contrase\u00F1a", void 0);
 __decorate([
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsPositive)(),
-    __metadata("design:type", Number)
-], CreateUsuarioDto.prototype, "rolId", void 0);
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateUsuarioDto.prototype, "verificarContrase\u00F1a", void 0);
 exports.CreateUsuarioDto = CreateUsuarioDto;

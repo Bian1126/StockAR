@@ -11,18 +11,24 @@ const common_1 = require("@nestjs/common");
 const venta_service_1 = require("./venta.service");
 const venta_controller_1 = require("./venta.controller");
 const typeorm_1 = require("@nestjs/typeorm");
-const venta_entity_1 = require("entities/venta.entity");
+const venta_entity_1 = require("../entities/venta.entity");
+const detalle_venta_entity_1 = require("../entities/detalle-venta.entity");
+const producto_module_1 = require("../producto/producto.module");
+const empleado_module_1 = require("../empleado/empleado.module");
 const detalle_venta_module_1 = require("../detalle-venta/detalle-venta.module");
 let VentaModule = class VentaModule {
 };
 VentaModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([venta_entity_1.Venta]),
-            detalle_venta_module_1.DetalleVentaModule,
+            typeorm_1.TypeOrmModule.forFeature([venta_entity_1.Venta, detalle_venta_entity_1.DetalleVenta]),
+            producto_module_1.ProductoModule,
+            empleado_module_1.EmpleadoModule,
+            detalle_venta_module_1.DetalleVentaModule, //Importar DetalleVentaModule
         ],
         controllers: [venta_controller_1.VentaController],
         providers: [venta_service_1.VentaService],
+        exports: [venta_service_1.VentaService],
     })
 ], VentaModule);
 exports.VentaModule = VentaModule;

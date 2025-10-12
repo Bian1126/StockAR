@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { TipoProducto } from '../entities/tipo-producto.entity';
-import { CreateTipoProductoDto } from 'common/dto/create-tipo-producto.dto';
-import { UpdateTipoProductoDto } from 'common/dto/update-tipo-producto.dto';
+import { CreateTipoProductoDto } from '../common/dto/create-tipo-producto.dto';
+import { UpdateTipoProductoDto } from '../common/dto/update-tipo-producto.dto';
 
 @Injectable()
 export class TipoProductoService {
@@ -19,7 +19,6 @@ export class TipoProductoService {
     tipoProducto.nombre = data.nombre!;
     tipoProducto.descripcion = data.descripcion!;
     tipoProducto.productos = [];
-    tipoProducto.detallesVenta = [];
     this.tipoProductos.push(tipoProducto);
     return tipoProducto;
   }

@@ -11,47 +11,35 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Venta = void 0;
 const typeorm_1 = require("typeorm");
-const usuario_entity_1 = require("../entities/usuario.entity");
 const detalle_venta_entity_1 = require("../entities/detalle-venta.entity");
+const empleado_entity_1 = require("./empleado.entity");
 let Venta = class Venta {
     constructor(init) {
         Object.assign(this, init);
-        if (!this.detalle) {
-            this.detalle = [];
-        }
-    }
-    calcularTotal() {
-        // Lógica para calcular el total de la venta sumando los subtotales de los detalles
-        return this.detalle.reduce((sum, d) => sum + d.subtotal, 0);
-    }
-    generarPDF() {
-        // Lógica para generar el comprobante PDF
     }
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)({ name: 'id_Venta' }),
     __metadata("design:type", Number)
 ], Venta.prototype, "idVenta", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Date)
-], Venta.prototype, "fecha", void 0);
+], Venta.prototype, "fechaHora", void 0);
 __decorate([
     (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2 }),
     __metadata("design:type", Number)
 ], Venta.prototype, "total", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Venta.prototype, "estado", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => usuario_entity_1.Usuario, usuario => usuario.ventas),
-    __metadata("design:type", usuario_entity_1.Usuario)
-], Venta.prototype, "usuario", void 0);
+    (0, typeorm_1.ManyToOne)(() => empleado_entity_1.Empleado, { nullable: false }),
+    (0, typeorm_1.JoinColumn)({ name: 'id_Empleado' }) // FK en Venta
+    ,
+    __metadata("design:type", empleado_entity_1.Empleado)
+], Venta.prototype, "empleado", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => detalle_venta_entity_1.DetalleVenta, detalleVenta => detalleVenta.venta),
     __metadata("design:type", Array)
-], Venta.prototype, "detalle", void 0);
+], Venta.prototype, "detalles", void 0);
 Venta = __decorate([
     (0, typeorm_1.Entity)(),
     __metadata("design:paramtypes", [Object])

@@ -28,7 +28,10 @@ let RolController = class RolController {
         return await this.rolService.findAll();
     }
     async findOne(id) {
-        return await this.rolService.findOne(Number(id));
+        const rol = await this.rolService.findOne(Number(id));
+        if (!rol)
+            throw new common_1.NotFoundException('Rol no encontrado');
+        return rol;
     }
     async update(id, updateRolDto) {
         return await this.rolService.update(Number(id), updateRolDto);

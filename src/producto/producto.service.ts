@@ -62,4 +62,24 @@ export class ProductoService {
     const producto = await this.findOne(id);
     await this.productoRepository.remove(producto);
   }
+
+  // Métodos para manejo de ventas
+  async validarStock(idProducto: number, cantidadRequerida: number): Promise<void> {
+    const producto = await this.findOne(idProducto);
+    if (producto.stock < cantidadRequerida) {
+      throw new BadRequestException(`Stock insuficiente para ${producto.nombre}. Stock disponible: ${producto.stock}, requerido: ${cantidadRequerida}`);
+    }
+  }
+
+  async reducirStock(idProducto: number, cantidad: number): Promise<void> {
+    const producto = await this.findOne(idProducto);
+    producto.stock -= cantidad;
+    await this.productoRepository.save(producto);
+  }
+
+  async aumentarStock(idProducto: number, cantidad: number): Promise<void> {
+    const producto = await this.findOne(idProducto);
+    producto.stock += cantidad;
+    await this.productoRepository.save(producto);
+  }
 }

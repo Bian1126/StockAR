@@ -21,20 +21,20 @@ let VentaController = class VentaController {
     constructor(ventaService) {
         this.ventaService = ventaService;
     }
-    async create(createVentaDto) {
-        return await this.ventaService.create(createVentaDto);
+    create(dto) {
+        return this.ventaService.create(dto);
     }
-    async findOne(id) {
-        return await this.ventaService.findOne(Number(id));
+    findAll() {
+        return this.ventaService.findAll();
     }
-    async findAll() {
-        return await this.ventaService.findAll();
+    findOne(id) {
+        return this.ventaService.findOne(+id);
     }
-    async update(id, updateVentaDto) {
-        return await this.ventaService.update(Number(id), updateVentaDto);
+    update(id, dto) {
+        return this.ventaService.update(+id, dto);
     }
-    async remove(id) {
-        return await this.ventaService.remove(Number(id));
+    remove(id) {
+        return this.ventaService.remove(+id);
     }
 };
 __decorate([
@@ -42,38 +42,38 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_venta_dto_1.CreateVentaDto]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], VentaController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], VentaController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], VentaController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], VentaController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Put)(':id'),
+    (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_venta_dto_1.UpdateVentaDto]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], VentaController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], VentaController.prototype, "remove", null);
 VentaController = __decorate([
-    (0, common_1.Controller)('venta'),
+    (0, common_1.Controller)('ventas'),
     __metadata("design:paramtypes", [venta_service_1.VentaService])
 ], VentaController);
 exports.VentaController = VentaController;

@@ -11,30 +11,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Usuario = void 0;
 const typeorm_1 = require("typeorm");
-const rol_entity_1 = require("../entities/rol.entity");
-const producto_entity_1 = require("../entities/producto.entity");
-const venta_entity_1 = require("../entities/venta.entity");
+const empleado_entity_1 = require("./empleado.entity");
 let Usuario = class Usuario {
     constructor(init) {
         Object.assign(this, init);
     }
-    // Despues ver
-    login() {
-        // Lógica de autenticación aquí
-        return true;
-    }
-    logout() {
-        // Lógica de cierre de sesión aquí
-    }
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)({ name: 'id_Usuario' }),
     __metadata("design:type", Number)
 ], Usuario.prototype, "idUsuario", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Usuario.prototype, "nombre", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
@@ -44,17 +30,11 @@ __decorate([
     __metadata("design:type", String)
 ], Usuario.prototype, "contrase\u00F1a", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => rol_entity_1.Rol, rol => rol.usuarios),
-    __metadata("design:type", rol_entity_1.Rol)
-], Usuario.prototype, "rol", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => producto_entity_1.Producto, producto => producto.usuario),
-    __metadata("design:type", Array)
-], Usuario.prototype, "productos", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => venta_entity_1.Venta, venta => venta.usuario),
-    __metadata("design:type", Array)
-], Usuario.prototype, "ventas", void 0);
+    (0, typeorm_1.OneToOne)(() => empleado_entity_1.Empleado, { nullable: false }),
+    (0, typeorm_1.JoinColumn)({ name: 'id_Empleado' }) // FK en Usuario
+    ,
+    __metadata("design:type", empleado_entity_1.Empleado)
+], Usuario.prototype, "empleado", void 0);
 Usuario = __decorate([
     (0, typeorm_1.Entity)(),
     __metadata("design:paramtypes", [Object])

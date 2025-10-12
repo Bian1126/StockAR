@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { Empleado } from './empleado.entity';
+import { Permission } from './permission.entity';
 
 @Entity()
 export class Rol {
@@ -14,6 +15,10 @@ export class Rol {
 
   @OneToMany(() => Empleado, empleado => empleado.rol)
   empleados!: Empleado[];
+
+  @ManyToMany(() => Permission, (permission) => permission.roles)
+  @JoinTable({ name: 'rol_permissions' })
+  permissions!: Permission[];
 
   constructor(init?: Partial<Rol>) {
     Object.assign(this, init);

@@ -28,13 +28,23 @@ let MonedaController = class MonedaController {
         return this.monedaService.findAll();
     }
     async findOne(id) {
-        return this.monedaService.findOne(Number(id));
+        const moneda = await this.monedaService.findOne(Number(id));
+        if (!moneda)
+            throw new common_1.NotFoundException('Moneda no encontrada');
+        return moneda;
     }
     async update(id, updateMonedaDto) {
-        return this.monedaService.update(Number(id), updateMonedaDto);
+        const updated = await this.monedaService.update(Number(id), updateMonedaDto);
+        if (!updated)
+            throw new common_1.NotFoundException('Moneda no encontrada');
+        return updated;
     }
     async remove(id) {
-        return this.monedaService.remove(Number(id));
+        const moneda = await this.monedaService.findOne(Number(id));
+        if (!moneda)
+            throw new common_1.NotFoundException('Moneda no encontrada');
+        await this.monedaService.remove(Number(id));
+        return { message: 'Moneda eliminada' };
     }
 };
 __decorate([
