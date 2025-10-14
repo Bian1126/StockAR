@@ -36,20 +36,20 @@ export class VentaService {
     });
     const savedVenta = await this.ventaRepository.save(venta);
 
-    // ✅ Procesar detalles usando DetalleVentaService
+    //Procesar detalles usando DetalleVentaService
     if (createVentaDto.detalle?.length > 0) {
       let totalVenta = 0;
       const detallesCreados: DetalleVenta[] = [];
 
       for (const detalleDto of createVentaDto.detalle) {
-        // ✅ DetalleVentaService maneja su propia lógica
+        //DetalleVentaService maneja su propia lógica
         const { detalle, subtotal } = await this.detalleVentaService.createFromVenta(
           savedVenta,
           detalleDto.productoId,
           detalleDto.cantidad
         );
         
-        // Guardar detalle
+        //Guardar detalle
         const savedDetalle = await this.detalleVentaRepository.save(detalle);
         detallesCreados.push(savedDetalle);
         totalVenta += subtotal;
@@ -58,7 +58,7 @@ export class VentaService {
         await this.productoService.reducirStock(detalleDto.productoId, detalleDto.cantidad);
       }
 
-      // Actualizar total de la venta
+      //Actualizar total de la venta
       savedVenta.total = totalVenta;
       await this.ventaRepository.save(savedVenta);
       savedVenta.detalles = detallesCreados;

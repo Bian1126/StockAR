@@ -12,22 +12,22 @@ export class DetalleVentaService {
     @InjectRepository(DetalleVenta)
     private readonly detalleVentaRepository: Repository<DetalleVenta>,
     
-    // ✅ Usar ProductoService en lugar de repositorio directo
+    //Usar ProductoService en lugar de repositorio directo
     private readonly productoService: ProductoService,
   ) {}
 
-  // ✅ Método para crear detalle desde venta (uso interno)
+  //Método para crear detalle desde venta (uso interno)
   async createFromVenta(
     venta: any, 
     productoId: number, 
     cantidad: number
   ): Promise<{ detalle: DetalleVenta, subtotal: number }> {
     
-    // ✅ Validar y obtener producto usando ProductoService
+    //Validar y obtener producto usando ProductoService
     const producto = await this.productoService.findOne(productoId);
     await this.productoService.validarStock(productoId, cantidad);
     
-    // ✅ Calcular subtotal (lógica de DetalleVenta)
+    //Calcular subtotal (lógica de DetalleVenta)
     const subtotal = this.calcularSubtotal(producto.precioVenta, cantidad);
     
     // Crear detalle
@@ -41,7 +41,7 @@ export class DetalleVentaService {
     return { detalle, subtotal };
   }
 
-  // ✅ Lógica de negocio: calcular subtotal
+  //Lógica de negocio: calcular subtotal
   private calcularSubtotal(precioUnitario: number, cantidad: number): number {
     return precioUnitario * cantidad;
   }
@@ -57,7 +57,7 @@ export class DetalleVentaService {
 
   async findOne(id: number): Promise<DetalleVenta> {
     const detalle = await this.detalleVentaRepository.findOne({
-      where: { idDetalle: id }, // ✅ Usar el campo correcto
+      where: { idDetalle: id }, //Usar el campo correcto
       relations: ['venta', 'producto'],
     });
 
