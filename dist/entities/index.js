@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Permission = exports.Venta = exports.Usuario = exports.TipoProducto = exports.TipoMoneda = exports.Rol = exports.Producto = exports.Moneda = exports.Empleado = exports.DetalleVenta = exports.entities = void 0;
+const config_entity_1 = require("./config.entity");
 const detalle_venta_entity_1 = require("./detalle-venta.entity");
 Object.defineProperty(exports, "DetalleVenta", { enumerable: true, get: function () { return detalle_venta_entity_1.DetalleVenta; } });
 const empleado_entity_1 = require("./empleado.entity");
@@ -32,4 +33,5 @@ exports.entities = [
     usuario_entity_1.Usuario,
     venta_entity_1.Venta,
     permission_entity_1.Permission,
+    config_entity_1.AppConfig,
 ];

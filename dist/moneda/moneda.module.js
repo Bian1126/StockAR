@@ -10,6 +10,7 @@ exports.MonedaModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const moneda_entity_1 = require("../entities/moneda.entity");
+const tipo_moneda_entity_1 = require("../entities/tipo-moneda.entity");
 const moneda_service_1 = require("../moneda/moneda.service");
 const moneda_controller_1 = require("./moneda.controller");
 const cotizacion_service_1 = require("./cotizacion.service");
@@ -18,7 +19,7 @@ let MonedaModule = class MonedaModule {
 };
 MonedaModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([moneda_entity_1.Moneda])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([moneda_entity_1.Moneda, tipo_moneda_entity_1.TipoMoneda])],
         providers: [moneda_service_1.MonedaService, cotizacion_service_1.CotizacionService],
         controllers: [moneda_controller_1.MonedaController, cotizacion_controller_1.CotizacionController],
         exports: [moneda_service_1.MonedaService, cotizacion_service_1.CotizacionService],

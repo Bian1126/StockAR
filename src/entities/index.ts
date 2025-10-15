@@ -1,3 +1,4 @@
+import { AppConfig } from './config.entity';
 import { DetalleVenta } from './detalle-venta.entity';
 import { Empleado } from './empleado.entity';
 import { Moneda } from './moneda.entity';
@@ -8,7 +9,6 @@ import { TipoProducto } from './tipo-producto.entity';
 import { Usuario } from './usuario.entity';
 import { Venta } from './venta.entity';
 import { Permission } from './permission.entity';
-
 
 export const entities = [
   DetalleVenta,
@@ -21,6 +21,7 @@ export const entities = [
   Usuario,
   Venta,
   Permission,
+  AppConfig,
 ];
 
 export { DetalleVenta };
