@@ -8,10 +8,10 @@ import { ProductoModule } from '../producto/producto.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([DetalleVenta]),
-    ProductoModule, // ✅ Importar para usar ProductoService
+    ProductoModule, //Importar para usar ProductoService
   ],
   controllers: [DetalleVentaController],
   providers: [DetalleVentaService],
-  exports: [DetalleVentaService], // ✅ Exportar para uso en VentaModule
+  exports: [DetalleVentaService], //Exportar para uso en VentaModule
 })
 export class DetalleVentaModule {}

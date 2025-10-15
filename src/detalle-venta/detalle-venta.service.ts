@@ -12,25 +12,25 @@ export class DetalleVentaService {
     @InjectRepository(DetalleVenta)
     private readonly detalleVentaRepository: Repository<DetalleVenta>,
     
-    // ✅ Usar ProductoService en lugar de repositorio directo
+    //Usar ProductoService en lugar de repositorio directo
     private readonly productoService: ProductoService,
   ) {}
 
-  // ✅ Método para crear detalle desde venta (uso interno)
+  //Método para crear detalle desde venta (uso interno)
   async createFromVenta(
     venta: any, 
     productoId: number, 
     cantidad: number
   ): Promise<{ detalle: DetalleVenta, subtotal: number }> {
     
-    // ✅ Validar y obtener producto usando ProductoService
+    //Validar y obtener producto usando ProductoService
     const producto = await this.productoService.findOne(productoId);
     await this.productoService.validarStock(productoId, cantidad);
     
-    // ✅ Calcular subtotal (lógica de DetalleVenta)
+    //Calcular subtotal (lógica de DetalleVenta)
     const subtotal = this.calcularSubtotal(producto.precioVenta, cantidad);
     
-    // Crear detalle
+    //Crear detalle
     const detalle = this.detalleVentaRepository.create({
       cantidad,
       subtotal,
@@ -41,13 +41,13 @@ export class DetalleVentaService {
     return { detalle, subtotal };
   }
 
-  // ✅ Lógica de negocio: calcular subtotal
+  //Lógica de negocio: calcular subtotal
   private calcularSubtotal(precioUnitario: number, cantidad: number): number {
     return precioUnitario * cantidad;
   }
 
   async create(dto: CreateDetalleVentaDto): Promise<DetalleVenta> {
-    // Este método se mantiene para uso directo del API
+    //Este método se mantiene para uso directo del API
     throw new BadRequestException('Use createFromVenta para crear detalles desde ventas');
   }
 
