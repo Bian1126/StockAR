@@ -14,8 +14,8 @@ const class_validator_1 = require("class-validator");
 class CreateProductoDto {
 }
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsPositive)(),
     __metadata("design:type", Number)
 ], CreateProductoDto.prototype, "codigo", void 0);
 __decorate([
@@ -39,23 +39,24 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateProductoDto.prototype, "precioNeto", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsPositive)(),
     __metadata("design:type", Number)
 ], CreateProductoDto.prototype, "precioVenta", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsPositive)(),
+    (0, class_validator_1.Min)(0),
     __metadata("design:type", Number)
 ], CreateProductoDto.prototype, "iva", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsPositive)(),
+    (0, class_validator_1.Min)(0),
     __metadata("design:type", Number)
 ], CreateProductoDto.prototype, "ganancia", void 0);
 __decorate([
     (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsPositive)(),
+    (0, class_validator_1.Min)(1),
     __metadata("design:type", Number)
 ], CreateProductoDto.prototype, "stock", void 0);
 __decorate([
