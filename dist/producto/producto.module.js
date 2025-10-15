@@ -14,11 +14,13 @@ const typeorm_1 = require("@nestjs/typeorm");
 const producto_entity_1 = require("../entities/producto.entity");
 const tipo_producto_entity_1 = require("../entities/tipo-producto.entity");
 const moneda_entity_1 = require("../entities/moneda.entity");
+const moneda_module_1 = require("../moneda/moneda.module");
+const config_module_1 = require("../config/config.module");
 let ProductoModule = class ProductoModule {
 };
 ProductoModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([producto_entity_1.Producto, tipo_producto_entity_1.TipoProducto, moneda_entity_1.Moneda])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([producto_entity_1.Producto, tipo_producto_entity_1.TipoProducto, moneda_entity_1.Moneda]), config_module_1.ConfigModule, moneda_module_1.MonedaModule],
         controllers: [producto_controller_1.ProductoController],
         providers: [producto_service_1.ProductoService],
         exports: [producto_service_1.ProductoService],

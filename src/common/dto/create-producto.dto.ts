@@ -1,8 +1,8 @@
-import { IsString, IsNotEmpty, IsNumber, IsPositive, IsInt } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsPositive, IsInt, IsOptional, Min } from 'class-validator';
 
 export class CreateProductoDto {
-  @IsString()
-  @IsNotEmpty()
+  @IsInt()
+  @IsPositive()
   codigo!: number;
 
   @IsString()
@@ -17,24 +17,28 @@ export class CreateProductoDto {
   @IsNotEmpty()
   marca!: string;
 
+  // Precio de compra por unidad en la moneda seleccionada
   @IsNumber()
   @IsPositive()
   precioNeto!: number;
 
+  // precioVenta lo calculamos en backend; si lo querés enviar puede ser opcional
+  @IsOptional()
   @IsNumber()
   @IsPositive()
-  precioVenta!: number;
+  precioVenta?: number; // creo q no lo usamos 
 
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   iva!: number;
 
+  // Ganancia (porcentaje) que viene desde el front (pantalla Calcular Precio)
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   ganancia!: number;
 
   @IsInt()
-  @IsPositive()
+  @Min(1)
   stock!: number;
 
   @IsInt()

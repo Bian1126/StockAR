@@ -12,14 +12,16 @@ const typeorm_1 = require("@nestjs/typeorm");
 const moneda_entity_1 = require("../entities/moneda.entity");
 const moneda_service_1 = require("../moneda/moneda.service");
 const moneda_controller_1 = require("./moneda.controller");
+const cotizacion_service_1 = require("./cotizacion.service");
+const cotizacion_controller_1 = require("./cotizacion.controller");
 let MonedaModule = class MonedaModule {
 };
 MonedaModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([moneda_entity_1.Moneda])],
-        providers: [moneda_service_1.MonedaService],
-        controllers: [moneda_controller_1.MonedaController],
-        exports: [moneda_service_1.MonedaService],
+        providers: [moneda_service_1.MonedaService, cotizacion_service_1.CotizacionService],
+        controllers: [moneda_controller_1.MonedaController, cotizacion_controller_1.CotizacionController],
+        exports: [moneda_service_1.MonedaService, cotizacion_service_1.CotizacionService],
     })
 ], MonedaModule);
 exports.MonedaModule = MonedaModule;
