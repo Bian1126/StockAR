@@ -8,7 +8,7 @@ import { DetalleVenta } from '../entities/detalle-venta.entity';
 import { ProductoService } from '../producto/producto.service';
 import { EmpleadoService } from '../empleado/empleado.service';
 import { DetalleVentaService } from '../detalle-venta/detalle-venta.service';
-
+  
 @Injectable()
 export class VentaService {
   constructor(

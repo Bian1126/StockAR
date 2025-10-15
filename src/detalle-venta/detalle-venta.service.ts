@@ -30,7 +30,7 @@ export class DetalleVentaService {
     //Calcular subtotal (lógica de DetalleVenta)
     const subtotal = this.calcularSubtotal(producto.precioVenta, cantidad);
     
-    // Crear detalle
+    //Crear detalle
     const detalle = this.detalleVentaRepository.create({
       cantidad,
       subtotal,
@@ -47,7 +47,7 @@ export class DetalleVentaService {
   }
 
   async create(dto: CreateDetalleVentaDto): Promise<DetalleVenta> {
-    // Este método se mantiene para uso directo del API
+    //Este método se mantiene para uso directo del API
     throw new BadRequestException('Use createFromVenta para crear detalles desde ventas');
   }
 
