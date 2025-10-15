@@ -36,7 +36,7 @@ export class ProductoService {
     let cot = 1;
     if (moneda.nombre?.toLowerCase().includes('dolar') || moneda.tipoMoneda.nombre?.toLowerCase().includes('dolar')) {
       try{
-        cot = await this.cotizacionService.getUsdOfficialVenta();
+        cot = await this.cotizacionService.getUsdOficialVenta();
 
       } catch(err) {
 

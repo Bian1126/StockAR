@@ -19,25 +19,68 @@ const typeorm_2 = require("typeorm");
 const producto_entity_1 = require("../entities/producto.entity");
 const tipo_producto_entity_1 = require("../entities/tipo-producto.entity");
 const moneda_entity_1 = require("../entities/moneda.entity");
+const cotizacion_service_1 = require("../moneda/cotizacion.service");
+const config_service_1 = require("../config/config.service");
 let ProductoService = class ProductoService {
-    constructor(productoRepository, tipoProductoRepository, monedaRepository) {
+    constructor(productoRepository, tipoProductoRepository, monedaRepository, cotizacionService, configService) {
         this.productoRepository = productoRepository;
         this.tipoProductoRepository = tipoProductoRepository;
         this.monedaRepository = monedaRepository;
+        this.cotizacionService = cotizacionService;
+        this.configService = configService;
     }
     async create(data) {
         const tipoProducto = await this.tipoProductoRepository.findOne({ where: { idTipoProducto: data.idTipoProducto } });
         if (!tipoProducto)
             throw new common_1.BadRequestException('Tipo de producto no encontrado');
-        const moneda = await this.monedaRepository.findOne({ where: { idMoneda: data.idMoneda } });
+        const moneda = await this.monedaRepository.findOne({ where: { idMoneda: data.idMoneda }, relations: ['tipoMoneda'] });
         if (!moneda)
             throw new common_1.BadRequestException('Moneda no encontrada');
+        // Ganancia: si viene en body la usamos; si no, usamos la de config
+        const ganancia = typeof data.ganancia === 'number' ? Number(data.ganancia) : Number(await this.configService.get('ganancia_default'));
+        const iva = typeof data.iva === 'number' ? Number(data.iva) : 21; // 21% por defecto
+        // Obtener cotización si la moneda es USD
+        let cot = 1;
+        if (moneda.nombre?.toLowerCase().includes('dolar') || moneda.tipoMoneda.nombre?.toLowerCase().includes('dolar')) {
+            try {
+                cot = await this.cotizacionService.getUsdOficialVenta();
+            }
+            catch (err) {
+                // fallback: Si la entidad moneda tiene cotizacion guardada
+                const stored = Number(moneda.cotizacion);
+                if (stored && !isNaN(stored) && stored > 0) {
+                    cot = stored;
+                    // opcional: log.warn('Cotizacion externa falló, usando moneda.cotizacion');
+                }
+                else {
+                } // no hay fallback: lanzar un error claro para el cliente
+                throw new common_1.BadRequestException('No se pudo obtener la cotización del Dólar. Intente más tarde.');
+            }
+        }
+        const precioCompra = Number(data.precioNeto ?? 0);
+        const cantidad = Number(data.stock ?? 1);
+        // Calculos
+        const costoARS = precioCompra * cot;
+        const precioVentaUnitarioSinIva = costoARS * (1 + ganancia / 100);
+        const precioVentaUnitarioConIva = precioVentaUnitarioSinIva * (1 + iva / 100);
+        const precioVentaTotalConIva = precioVentaUnitarioConIva * cantidad;
         const producto = this.productoRepository.create({
             ...data,
             tipoProducto,
             moneda,
+            precioNeto: Number(costoARS.toFixed(2)),
+            precioVenta: Number(precioVentaUnitarioSinIva.toFixed(2)),
+            iva,
+            ganancia,
         });
-        return await this.productoRepository.save(producto);
+        const saved = await this.productoRepository.save(producto);
+        // devolver también los valores con IVA para que el front los muestre inmediatamente
+        return {
+            ...saved,
+            precioVentaUnitarioConIva: Number(precioVentaUnitarioConIva.toFixed(2)),
+            precioVentaTotalConIva: Number(precioVentaTotalConIva.toFixed(2)),
+            cotizacionUsada: cot,
+        };
     }
     async findAll() {
         return await this.productoRepository.find({ relations: ['tipoProducto', 'moneda'] });
@@ -46,7 +89,14 @@ let ProductoService = class ProductoService {
         const producto = await this.productoRepository.findOne({ where: { idProducto: id }, relations: ['tipoProducto', 'moneda'] });
         if (!producto)
             throw new common_1.NotFoundException('Producto no encontrado');
-        return producto;
+        const precioUnitSinIva = Number(producto.precioVenta);
+        const unitConIva = precioUnitSinIva * (1 + Number(producto.iva) / 100);
+        return {
+            ...producto,
+            precioVentaUnitarioConIva: Number(unitConIva.toFixed(2)),
+            // si querés total por stock o por cantidad, multiplicar por producto.stock
+            precioVentaTotalConIva: Number((unitConIva * (producto.stock ?? 1)).toFixed(2)),
+        };
     }
     async update(id, data) {
         const producto = await this.findOne(id);
@@ -94,6 +144,8 @@ ProductoService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(moneda_entity_1.Moneda)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        cotizacion_service_1.CotizacionService,
+        config_service_1.ConfigService])
 ], ProductoService);
 exports.ProductoService = ProductoService;

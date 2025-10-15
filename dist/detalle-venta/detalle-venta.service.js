@@ -20,19 +20,19 @@ const detalle_venta_entity_1 = require("../entities/detalle-venta.entity");
 const producto_service_1 = require("../producto/producto.service");
 let DetalleVentaService = class DetalleVentaService {
     constructor(detalleVentaRepository, 
-    // ✅ Usar ProductoService en lugar de repositorio directo
+    //Usar ProductoService en lugar de repositorio directo
     productoService) {
         this.detalleVentaRepository = detalleVentaRepository;
         this.productoService = productoService;
     }
-    // ✅ Método para crear detalle desde venta (uso interno)
+    //Método para crear detalle desde venta (uso interno)
     async createFromVenta(venta, productoId, cantidad) {
-        // ✅ Validar y obtener producto usando ProductoService
+        //Validar y obtener producto usando ProductoService
         const producto = await this.productoService.findOne(productoId);
         await this.productoService.validarStock(productoId, cantidad);
-        // ✅ Calcular subtotal (lógica de DetalleVenta)
+        //Calcular subtotal (lógica de DetalleVenta)
         const subtotal = this.calcularSubtotal(producto.precioVenta, cantidad);
-        // Crear detalle
+        //Crear detalle
         const detalle = this.detalleVentaRepository.create({
             cantidad,
             subtotal,
@@ -41,12 +41,12 @@ let DetalleVentaService = class DetalleVentaService {
         });
         return { detalle, subtotal };
     }
-    // ✅ Lógica de negocio: calcular subtotal
+    //Lógica de negocio: calcular subtotal
     calcularSubtotal(precioUnitario, cantidad) {
         return precioUnitario * cantidad;
     }
     async create(dto) {
-        // Este método se mantiene para uso directo del API
+        //Este método se mantiene para uso directo del API
         throw new common_1.BadRequestException('Use createFromVenta para crear detalles desde ventas');
     }
     async findAll() {
