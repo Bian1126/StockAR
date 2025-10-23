@@ -12,13 +12,14 @@
     "rootDir": "./src",
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
+    "types": ["jest", "node"]
   },
   "include": [
-    "src/**/*.ts"
+    "src//*.ts"
   ],
   "exclude": [
     "node_modules",
-    "**/*.spec.ts"
+    "dist"
   ]
 }

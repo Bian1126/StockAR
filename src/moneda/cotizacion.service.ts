@@ -48,8 +48,14 @@ export class CotizacionService {
       data = await this.fetchAll();
     } catch (err) {
       console.warn('Error al llamar la API, usando valor local de fallback');
-      return 1385; // fallback local
+      return 1385; // fallback local solo si la API no responde
     }
+
+    // Valida q la API devolvió datos válidos
+    if (!data || data.length === 0) {
+    throw new NotFoundException('No se encontró el dólar oficial en la API');
+  }
+
 
     // Recorre el array y busca el dólar oficial comparando el campo 'casa'
     const usd = data.find(d => d.casa.toLowerCase() === 'oficial');

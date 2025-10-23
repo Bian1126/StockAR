@@ -8,6 +8,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
+    "test:unit": "jest --testPathPattern=\\.spec\\.ts$",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
@@ -32,11 +33,12 @@
   "devDependencies": {
     "@nestjs/testing": "^11.1.6",
     "@types/express": "^5.0.3",
-    "@types/jest": "^27.5.2",
+    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.6",
-    "jest": "^27.0.0",
+    "axios-mock-adapter": "^2.1.0",
+    "jest": "^30.2.0",
     "supertest": "^7.1.4",
-    "ts-jest": "^27.0.0",
+    "ts-jest": "^29.4.5",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.4"
   },
