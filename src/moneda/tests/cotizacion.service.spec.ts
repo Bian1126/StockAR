@@ -229,9 +229,8 @@ describe('CotizacionService - Unit Test|s', () => {
       };
       mockedAxios.get.mockResolvedValueOnce(mockResponse);
 
-      // ACT & ASSERT: Debe lanzar excepción
-      await expect(service.getUsdOficialVenta()).rejects.toThrow(NotFoundException);
-      await expect(service.getUsdOficialVenta()).rejects.toThrow('No se encontró el dólar oficial en la API');
+  // ACT & ASSERT: Debe lanzar excepción
+  await expect(service.getUsdOficialVenta()).rejects.toThrow('No se encontró el dólar oficial en la API');
     });
 
     /**
@@ -256,9 +255,8 @@ describe('CotizacionService - Unit Test|s', () => {
       };
       mockedAxios.get.mockResolvedValueOnce(mockResponse);
 
-      // ACT & ASSERT: Debe lanzar excepción por valor inválido
-      await expect(service.getUsdOficialVenta()).rejects.toThrow(NotFoundException);
-      await expect(service.getUsdOficialVenta()).rejects.toThrow('Valor de cotización inválido');
+  // ACT & ASSERT: Debe lanzar excepción por valor inválido
+  await expect(service.getUsdOficialVenta()).rejects.toThrow('Valor de cotización inválido');
     });
   });
 

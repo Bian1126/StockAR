@@ -35,7 +35,7 @@ describe('CotizacionService (integration)', () => {
     // Imprimir el valor para 
     // (solo cuando la integración real está activada)
     const formatted = new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(venta);
-    console.log(Cotización oficial (venta): ARS ${formatted}  (valor numérico: ${venta}));
+    console.log(`Cotización oficial (venta): ARS ${formatted}  (valor numérico: ${venta})`);
 
     // Assert: validaciones robustas
     // - Tipo número
