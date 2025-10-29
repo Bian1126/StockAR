@@ -21,7 +21,6 @@ describe('CotizacionService (integration)', () => {
     // Gate: evita que el test corra por defecto (p. ej. en CI)
     // Activa la prueba manualmente con:
     //   PowerShell: $env:RUN_EXTERNAL_INTEGRATION=1; npm run test -- src/moneda/tests/cotizacion.int.spec.ts
-    //   CMD: set RUN_EXTERNAL_INTEGRATION=1 && npm run test -- src\moneda\tests\cotizacion.int.spec.ts
     if (!process.env.RUN_EXTERNAL_INTEGRATION) {
       console.log('Skipping external integration test. Set RUN_EXTERNAL_INTEGRATION=1 to enable.');
       return;
@@ -32,6 +31,11 @@ describe('CotizacionService (integration)', () => {
 
     // Act: llamada real a la API (puede tardar)
     const venta = await svc.getUsdOficialVenta();
+
+    // Imprimir el valor para 
+    // (solo cuando la integración real está activada)
+    const formatted = new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(venta);
+    console.log(Cotización oficial (venta): ARS ${formatted}  (valor numérico: ${venta}));
 
     // Assert: validaciones robustas
     // - Tipo número
