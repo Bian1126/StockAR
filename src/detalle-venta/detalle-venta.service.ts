@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, EntityManager } from 'typeorm';
 import { DetalleVenta } from '../entities/detalle-venta.entity';
 import { CreateDetalleVentaDto } from '../common/dto/create-detalle-venta.dto';
 import { UpdateDetalleVentaDto } from '../common/dto/update-detalle-venta.dto';
 import { ProductoService } from '../producto/producto.service';
+import { Producto } from '../entities/producto.entity';
 
 @Injectable()
 export class DetalleVentaService {
@@ -18,26 +19,36 @@ export class DetalleVentaService {
 
   //Método para crear detalle desde venta (uso interno)
   async createFromVenta(
-    venta: any, 
-    productoId: number, 
-    cantidad: number
-  ): Promise<{ detalle: DetalleVenta, subtotal: number }> {
-    
-    //Validar y obtener producto usando ProductoService
-    const producto = await this.productoService.findOne(productoId);
-    await this.productoService.validarStock(productoId, cantidad);
-    
+    venta: any,
+    productoId: number,
+    cantidad: number,
+    manager?: EntityManager,
+  ): Promise<{ detalle: DetalleVenta; subtotal: number }> {
+    // Obtener producto: si nos pasan un EntityManager (ej. queryRunner.manager) lo usamos
+    let producto: Producto | null = null;
+    if (manager) {
+      producto = await manager.findOne(Producto, { where: { idProducto: productoId }, relations: ['tipoProducto', 'moneda'] as any });
+      if (!producto) throw new NotFoundException('Producto no encontrado');
+      if ((producto.stock ?? 0) < cantidad) {
+        throw new BadRequestException(`Stock insuficiente para ${producto.nombre}. Stock disponible: ${producto.stock}, requerido: ${cantidad}`);
+      }
+    } else {
+      // Lectura fuera de transacción usando el servicio existente
+      producto = await this.productoService.findOne(productoId);
+      await this.productoService.validarStock(productoId, cantidad);
+    }
+
     //Calcular subtotal (lógica de DetalleVenta)
-    const subtotal = this.calcularSubtotal(producto.precioVenta, cantidad);
-    
+    const subtotal = this.calcularSubtotal((producto as any).precioVenta, cantidad);
+
     //Crear detalle
-    const detalle = this.detalleVentaRepository.create({
+    const detalle = Object.assign(new DetalleVenta(), {
       cantidad,
       subtotal,
-      producto,
-      venta
+      producto: producto as any,
+      venta,
     });
-    
+
     return { detalle, subtotal };
   }
 

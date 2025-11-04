@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { Producto } from '../entities/producto.entity';
 import { TipoProducto } from '../entities/tipo-producto.entity';
 import { Moneda } from '../entities/moneda.entity';
@@ -129,14 +129,42 @@ export class ProductoService {
   }
 
   async reducirStock(idProducto: number, cantidad: number): Promise<void> {
-    const producto = await this.findOne(idProducto);
-    producto.stock -= cantidad;
-    await this.productoRepository.save(producto);
+    // Hacer la decrementación de forma atómica en la base de datos para evitar
+    // condiciones de carrera que permitan stock negativo.
+    // UPDATE producto SET stock = stock - :cantidad WHERE idProducto = :idProducto AND stock >= :cantidad
+    const result: UpdateResult = await this.productoRepository
+      .createQueryBuilder()
+      .update()
+      .set({ stock: () => `stock - ${cantidad}` })
+      .where('idProducto = :idProducto AND stock >= :cantidad', { idProducto, cantidad })
+      .execute();
+
+    if ((result.affected || 0) === 0) {
+      // No se pudo decrementar (posible stock insuficiente o producto inexistente)
+      // Comprobar existencia para dar un mensaje más claro
+      try {
+        const p = await this.findOne(idProducto);
+        throw new BadRequestException(`Stock insuficiente para ${p.nombre}. Stock disponible: ${p.stock}, requerido: ${cantidad}`);
+      } catch (err) {
+        // Si findOne lanza NotFoundException, propagar error de producto no encontrado
+        if (err instanceof NotFoundException) throw err;
+        throw new BadRequestException(`No se pudo decrementar stock para producto id=${idProducto}`);
+      }
+    }
   }
 
   async aumentarStock(idProducto: number, cantidad: number): Promise<void> {
-    const producto = await this.findOne(idProducto);
-    producto.stock += cantidad;
-    await this.productoRepository.save(producto);
+    // Hacer incremento atómico en la base de datos para evitar race conditions
+    const result = await this.productoRepository
+      .createQueryBuilder()
+      .update()
+      .set({ stock: () => `stock + ${cantidad}` })
+      .where('idProducto = :idProducto', { idProducto })
+      .execute();
+
+    if ((result.affected || 0) === 0) {
+      // Producto no encontrado
+      throw new NotFoundException(`Producto con id ${idProducto} no encontrado`);
+    }
   }
 }
