@@ -18,6 +18,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const detalle_venta_entity_1 = require("../entities/detalle-venta.entity");
 const producto_service_1 = require("../producto/producto.service");
+const producto_entity_1 = require("../entities/producto.entity");
 let DetalleVentaService = class DetalleVentaService {
     constructor(detalleVentaRepository, 
     //Usar ProductoService en lugar de repositorio directo
@@ -26,18 +27,30 @@ let DetalleVentaService = class DetalleVentaService {
         this.productoService = productoService;
     }
     //Método para crear detalle desde venta (uso interno)
-    async createFromVenta(venta, productoId, cantidad) {
-        //Validar y obtener producto usando ProductoService
-        const producto = await this.productoService.findOne(productoId);
-        await this.productoService.validarStock(productoId, cantidad);
+    async createFromVenta(venta, productoId, cantidad, manager) {
+        // Obtener producto: si nos pasan un EntityManager (ej. queryRunner.manager) lo usamos
+        let producto = null;
+        if (manager) {
+            producto = await manager.findOne(producto_entity_1.Producto, { where: { idProducto: productoId }, relations: ['tipoProducto', 'moneda'] });
+            if (!producto)
+                throw new common_1.NotFoundException('Producto no encontrado');
+            if ((producto.stock ?? 0) < cantidad) {
+                throw new common_1.BadRequestException(`Stock insuficiente para ${producto.nombre}. Stock disponible: ${producto.stock}, requerido: ${cantidad}`);
+            }
+        }
+        else {
+            // Lectura fuera de transacción usando el servicio existente
+            producto = await this.productoService.findOne(productoId);
+            await this.productoService.validarStock(productoId, cantidad);
+        }
         //Calcular subtotal (lógica de DetalleVenta)
         const subtotal = this.calcularSubtotal(producto.precioVenta, cantidad);
         //Crear detalle
-        const detalle = this.detalleVentaRepository.create({
+        const detalle = Object.assign(new detalle_venta_entity_1.DetalleVenta(), {
             cantidad,
             subtotal,
-            producto,
-            venta
+            producto: producto,
+            venta,
         });
         return { detalle, subtotal };
     }

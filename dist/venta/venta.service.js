@@ -24,43 +24,73 @@ const detalle_venta_service_1 = require("../detalle-venta/detalle-venta.service"
 let VentaService = class VentaService {
     constructor(ventaRepository, detalleVentaRepository, 
     //Usar servicios especializados
-    productoService, empleadoService, detalleVentaService) {
+    productoService, empleadoService, detalleVentaService, dataSource) {
         this.ventaRepository = ventaRepository;
         this.detalleVentaRepository = detalleVentaRepository;
         this.productoService = productoService;
         this.empleadoService = empleadoService;
         this.detalleVentaService = detalleVentaService;
+        this.dataSource = dataSource;
     }
     async create(createVentaDto) {
-        //Delega al EmpleadoService
-        const empleado = await this.empleadoService.findOne(createVentaDto.usuarioId);
-        // Crear la venta
-        const venta = this.ventaRepository.create({
-            fechaHora: new Date(),
-            total: 0,
-            empleado
-        });
-        const savedVenta = await this.ventaRepository.save(venta);
-        //Procesar detalles usando DetalleVentaService
-        if (createVentaDto.detalle?.length > 0) {
-            let totalVenta = 0;
+        // Usar transacción para que la creación de la venta, los detalles y la reducción
+        // de stock sean atómicos: si algo falla, se revierte todo.
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            // Delega al EmpleadoService (fuera de transacción está bien si es lectura)
+            const empleado = await this.empleadoService.findOne(createVentaDto.usuarioId);
+            // Crear la venta usando queryRunner
+            const venta = queryRunner.manager.create(venta_entity_1.Venta, {
+                fechaHora: new Date(),
+                total: 0,
+                empleado,
+            });
+            const savedVenta = await queryRunner.manager.save(venta);
             const detallesCreados = [];
-            for (const detalleDto of createVentaDto.detalle) {
-                //DetalleVentaService maneja su propia lógica
-                const { detalle, subtotal } = await this.detalleVentaService.createFromVenta(savedVenta, detalleDto.productoId, detalleDto.cantidad);
-                //Guardar detalle
-                const savedDetalle = await this.detalleVentaRepository.save(detalle);
-                detallesCreados.push(savedDetalle);
-                totalVenta += subtotal;
-                //ProductoService reduce stock
-                await this.productoService.reducirStock(detalleDto.productoId, detalleDto.cantidad);
+            let totalVenta = 0;
+            if (createVentaDto.detalle?.length > 0) {
+                for (const detalleDto of createVentaDto.detalle) {
+                    // Validar stock y construir detalle (detalleVentaService.createFromVenta usa productoService.findOne)
+                    const { detalle, subtotal } = await this.detalleVentaService.createFromVenta(savedVenta, detalleDto.productoId, detalleDto.cantidad, queryRunner.manager);
+                    // Guardar detalle dentro de la transacción
+                    const savedDetalle = await queryRunner.manager.save(detalle);
+                    detallesCreados.push(savedDetalle);
+                    totalVenta += subtotal;
+                    // Reducir stock usando queryRunner para mantener consistencia
+                    // Intentamos la operación atómica definida en ProductoService (que usa query builder)
+                    // Para usarla dentro de la transacción, ejecutamos un UPDATE condicional directamente aquí
+                    const updateResult = await queryRunner.manager
+                        .createQueryBuilder()
+                        .update('producto')
+                        .set({ stock: () => `stock - ${detalleDto.cantidad}` })
+                        .where('idProducto = :idProducto AND stock >= :cantidad', { idProducto: detalleDto.productoId, cantidad: detalleDto.cantidad })
+                        .execute();
+                    if ((updateResult.affected || 0) === 0) {
+                        // No hay stock suficiente, lanzar excepción para que la transacción haga rollback
+                        const productoActual = await queryRunner.manager.findOne('producto', { where: { idProducto: detalleDto.productoId } });
+                        const nombre = (productoActual && productoActual.nombre) || detalleDto.productoId;
+                        throw new common_1.BadRequestException(`Stock insuficiente para ${nombre}. Requerido: ${detalleDto.cantidad}`);
+                    }
+                }
             }
-            //Actualizar total de la venta
+            // Actualizar total y commit
             savedVenta.total = totalVenta;
-            await this.ventaRepository.save(savedVenta);
+            await queryRunner.manager.save(savedVenta);
             savedVenta.detalles = detallesCreados;
+            await queryRunner.commitTransaction();
+            return savedVenta;
         }
-        return savedVenta;
+        catch (err) {
+            await queryRunner.rollbackTransaction();
+            if (err instanceof common_1.BadRequestException)
+                throw err;
+            throw new common_1.InternalServerErrorException('Error al crear la venta');
+        }
+        finally {
+            await queryRunner.release();
+        }
     }
     async findAll() {
         return this.ventaRepository.find({
@@ -96,6 +126,7 @@ VentaService = __decorate([
         typeorm_2.Repository,
         producto_service_1.ProductoService,
         empleado_service_1.EmpleadoService,
-        detalle_venta_service_1.DetalleVentaService])
+        detalle_venta_service_1.DetalleVentaService,
+        typeorm_2.DataSource])
 ], VentaService);
 exports.VentaService = VentaService;
