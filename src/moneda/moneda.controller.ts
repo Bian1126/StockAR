@@ -2,8 +2,7 @@ import { Controller, Get, Post, Body, Param, Delete, Put, NotFoundException } fr
 import { MonedaService } from '../moneda/moneda.service';
 import { CreateMonedaDto } from '../common/dto/create-moneda.dto';
 import { UpdateMonedaDto } from '../common/dto/update-moneda.dto';
-import { CotizacionService } from './cotizacion.service';
-
+ 
 @Controller('monedas')
 export class MonedaController {
   constructor(private readonly monedaService: MonedaService) {}

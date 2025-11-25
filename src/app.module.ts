@@ -32,6 +32,7 @@ import { TipoProductoModule } from './tipoProducto/tipoProducto.module';
           password,
           database,
           entities,
+          synchronize: true,
         };
       },
       inject: [ConfigService],

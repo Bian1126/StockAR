@@ -5,61 +5,56 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsuarioService = void 0;
 const common_1 = require("@nestjs/common");
-const typeorm_1 = require("@nestjs/typeorm");
-const typeorm_2 = require("typeorm");
 const usuario_entity_1 = require("../entities/usuario.entity");
 let UsuarioService = class UsuarioService {
-    constructor(usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
+    constructor() {
+        this.usuarios = [];
+        this.nextId = 1;
     }
     async create(createUsuarioDto) {
         if (createUsuarioDto.contraseña !== createUsuarioDto.verificarContraseña) {
             throw new Error('Las contraseñas no coinciden');
         }
-        const usuario = this.usuarioRepository.create({
-            email: createUsuarioDto.email,
-            contraseña: createUsuarioDto.contraseña
-        });
-        return await this.usuarioRepository.save(usuario);
+        const usuario = new usuario_entity_1.Usuario();
+        usuario.idUsuario = this.nextId++;
+        usuario.email = createUsuarioDto.email;
+        usuario.contraseña = createUsuarioDto.contraseña;
+        this.usuarios.push(usuario);
+        return usuario;
     }
     async findAll() {
-        return await this.usuarioRepository.find();
+        return this.usuarios;
     }
     async findOne(id) {
-        return await this.usuarioRepository.findOne({ where: { idUsuario: id } });
+        return this.usuarios.find(usuario => usuario.idUsuario === id);
     }
     async update(id, updateUsuarioDto) {
-        const usuario = await this.findOne(id);
-        if (!usuario)
-            return null;
-        Object.assign(usuario, updateUsuarioDto);
-        return await this.usuarioRepository.save(usuario);
+        const index = this.usuarios.findIndex(u => u.idUsuario === id);
+        if (index !== -1) {
+            this.usuarios[index] = new usuario_entity_1.Usuario({
+                ...this.usuarios[index],
+                ...updateUsuarioDto
+            });
+            return this.usuarios[index];
+        }
+        return null;
     }
     async remove(id) {
-        await this.usuarioRepository.delete(id);
+        this.usuarios = this.usuarios.filter(usuario => usuario.idUsuario !== id);
     }
     async login(loginUsuarioDto) {
-        const usuario = await this.usuarioRepository.findOne({
-            where: {
-                email: loginUsuarioDto.email,
-                contraseña: loginUsuarioDto.contraseña
-            }
-        });
+        const usuario = this.usuarios.find(u => u.email === loginUsuarioDto.email && u.contraseña === loginUsuarioDto.contraseña);
         return usuario ? 'Login exitoso' : 'Credenciales incorrectas';
+    }
+    async logout(logoutUsuarioDto) {
+        // Aquí podrías marcar al usuario como deslogueado, si tuvieras un campo para eso
+        return 'Logout exitoso';
     }
 };
 UsuarioService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(usuario_entity_1.Usuario)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    (0, common_1.Injectable)()
 ], UsuarioService);
 exports.UsuarioService = UsuarioService;

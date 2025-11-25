@@ -43,6 +43,7 @@ AppModule = __decorate([
                         password,
                         database,
                         entities: entities_1.entities,
+                        synchronize: true,
                     };
                 },
                 inject: [config_1.ConfigService],
