@@ -22,7 +22,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Usuario.prototype, "idUsuario", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)
 ], Usuario.prototype, "email", void 0);
 __decorate([
@@ -30,7 +30,7 @@ __decorate([
     __metadata("design:type", String)
 ], Usuario.prototype, "contrase\u00F1a", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => empleado_entity_1.Empleado, { nullable: false }),
+    (0, typeorm_1.OneToOne)(() => empleado_entity_1.Empleado, { nullable: true }),
     (0, typeorm_1.JoinColumn)({ name: 'id_Empleado' }) // FK en Usuario
     ,
     __metadata("design:type", empleado_entity_1.Empleado)

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Moneda } from '../entities/moneda.entity';
 import { TipoMoneda } from '../entities/tipo-moneda.entity';
 import { CreateMonedaDto } from '../common/dto/create-moneda.dto';
+import { UpdateMonedaDto } from '../common/dto/update-moneda.dto';
 
 @Injectable()
 export class MonedaService {
@@ -36,10 +37,10 @@ export class MonedaService {
     return m;
   }
 
-  async update(id: number, data: Partial<Moneda & { tipoMonedaId?: number }>) {
+  async update(id: number, data: UpdateMonedaDto) {
     const m = await this.findOne(id);
-    if ((data as any).tipoMonedaId) {
-      const tipo = await this.tipoRepo.findOneBy({ idTipoMoneda: (data as any).tipoMonedaId });
+    if (data.tipoMonedaId) {
+      const tipo = await this.tipoRepo.findOneBy({ idTipoMoneda: data.tipoMonedaId });
       if (!tipo) throw new NotFoundException('TipoMoneda no encontrado');
       m.tipoMoneda = tipo;
     }

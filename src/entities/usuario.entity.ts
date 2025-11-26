@@ -6,15 +6,15 @@ export class Usuario {
   @PrimaryGeneratedColumn({ name: 'id_Usuario' })
   idUsuario!: number;
 
-  @Column()
+  @Column({ unique: true })
   email!: string;
 
   @Column()
   contraseña!: string;
 
-  @OneToOne(() => Empleado, { nullable: false })
+  @OneToOne(() => Empleado, { nullable: true })
   @JoinColumn({ name: 'id_Empleado' }) // FK en Usuario
-  empleado!: Empleado;
+  empleado?: Empleado;
 
   constructor(init?: Partial<Usuario>) {
     Object.assign(this, init);

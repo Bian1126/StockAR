@@ -9,7 +9,7 @@ export class MonedaController {
 
   @Post()
   async create(@Body() createMonedaDto: CreateMonedaDto) {
-    return this.monedaService.create(createMonedaDto);
+    return await this.monedaService.create(createMonedaDto);
   }
 
   @Get()

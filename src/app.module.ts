@@ -33,6 +33,7 @@ import { TipoProductoModule } from './tipoProducto/tipoProducto.module';
           database,
           entities,
           synchronize: true,
+          logging: true,
         };
       },
       inject: [ConfigService],

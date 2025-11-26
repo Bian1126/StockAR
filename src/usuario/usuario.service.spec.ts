@@ -1,18 +1,34 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { UsuarioService } from './usuario.service';
+import { Usuario } from '../entities/usuario.entity';
 import { CreateUsuarioDto } from '../common/dto/create-usuario.dto';
 import { LoginUsuarioDto } from '../common/dto/login-usuario.dto';
 
 describe('UsuarioService - registro e inicio de sesión', () => {
   let service: UsuarioService;
+  let mockRepository: any;
 
   beforeEach(async () => {
-    service = new UsuarioService();
-    // Creamos un usuario para las pruebas de login
-    await service.create({
-      email: 'usuarioadmin@test.com',
-      contraseña: 'Password123',
-      verificarContraseña: 'Password123'
-    } as CreateUsuarioDto);
+    mockRepository = {
+      find: jest.fn(),
+      findOne: jest.fn(),
+      create: jest.fn(),
+      save: jest.fn(),
+      remove: jest.fn(),
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        UsuarioService,
+        {
+          provide: getRepositoryToken(Usuario),
+          useValue: mockRepository,
+        },
+      ],
+    }).compile();
+
+    service = module.get<UsuarioService>(UsuarioService);
   });
 
   it('Registro de usuario exitoso', async () => {

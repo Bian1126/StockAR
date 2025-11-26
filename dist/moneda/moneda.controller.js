@@ -22,7 +22,7 @@ let MonedaController = class MonedaController {
         this.monedaService = monedaService;
     }
     async create(createMonedaDto) {
-        return this.monedaService.create(createMonedaDto);
+        return await this.monedaService.create(createMonedaDto);
     }
     async findAll() {
         return this.monedaService.findAll();

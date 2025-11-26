@@ -5,49 +5,78 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsuarioService = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
 const usuario_entity_1 = require("../entities/usuario.entity");
 let UsuarioService = class UsuarioService {
-    constructor() {
-        this.usuarios = [];
-        this.nextId = 1;
+    constructor(usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
     }
     async create(createUsuarioDto) {
         if (createUsuarioDto.contraseña !== createUsuarioDto.verificarContraseña) {
-            throw new Error('Las contraseñas no coinciden');
+            throw new common_1.BadRequestException('Las contraseñas no coinciden');
         }
-        const usuario = new usuario_entity_1.Usuario();
-        usuario.idUsuario = this.nextId++;
-        usuario.email = createUsuarioDto.email;
-        usuario.contraseña = createUsuarioDto.contraseña;
-        this.usuarios.push(usuario);
-        return usuario;
+        // Verificar si el email ya existe
+        const existingUsuario = await this.usuarioRepository.findOne({
+            where: { email: createUsuarioDto.email }
+        });
+        if (existingUsuario) {
+            throw new common_1.BadRequestException('El email ya está registrado');
+        }
+        const usuario = this.usuarioRepository.create({
+            email: createUsuarioDto.email,
+            contraseña: createUsuarioDto.contraseña,
+        });
+        return await this.usuarioRepository.save(usuario);
     }
     async findAll() {
-        return this.usuarios;
+        return await this.usuarioRepository.find();
     }
     async findOne(id) {
-        return this.usuarios.find(usuario => usuario.idUsuario === id);
+        const usuario = await this.usuarioRepository.findOne({
+            where: { idUsuario: id }
+        });
+        return usuario ?? undefined;
     }
     async update(id, updateUsuarioDto) {
-        const index = this.usuarios.findIndex(u => u.idUsuario === id);
-        if (index !== -1) {
-            this.usuarios[index] = new usuario_entity_1.Usuario({
-                ...this.usuarios[index],
-                ...updateUsuarioDto
-            });
-            return this.usuarios[index];
+        const usuario = await this.usuarioRepository.findOne({
+            where: { idUsuario: id }
+        });
+        if (!usuario) {
+            throw new common_1.NotFoundException(`Usuario con ID ${id} no encontrado`);
         }
-        return null;
+        Object.assign(usuario, updateUsuarioDto);
+        return await this.usuarioRepository.save(usuario);
     }
     async remove(id) {
-        this.usuarios = this.usuarios.filter(usuario => usuario.idUsuario !== id);
+        const usuario = await this.usuarioRepository.findOne({
+            where: { idUsuario: id }
+        });
+        if (!usuario) {
+            throw new common_1.NotFoundException(`Usuario con ID ${id} no encontrado`);
+        }
+        await this.usuarioRepository.remove(usuario);
     }
     async login(loginUsuarioDto) {
-        const usuario = this.usuarios.find(u => u.email === loginUsuarioDto.email && u.contraseña === loginUsuarioDto.contraseña);
-        return usuario ? 'Login exitoso' : 'Credenciales incorrectas';
+        const usuario = await this.usuarioRepository.findOne({
+            where: {
+                email: loginUsuarioDto.email,
+                contraseña: loginUsuarioDto.contraseña
+            }
+        });
+        if (!usuario) {
+            throw new common_1.BadRequestException('Credenciales incorrectas');
+        }
+        return 'Login exitoso';
     }
     async logout(logoutUsuarioDto) {
         // Aquí podrías marcar al usuario como deslogueado, si tuvieras un campo para eso
@@ -55,6 +84,8 @@ let UsuarioService = class UsuarioService {
     }
 };
 UsuarioService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(usuario_entity_1.Usuario)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], UsuarioService);
 exports.UsuarioService = UsuarioService;
